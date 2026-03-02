@@ -1,0 +1,10 @@
+/* 
+  App.css intentionally minimal.
+  Global styles are handled via Tailwind (index.css).
+  Component-level styles live alongside components if needed.
+*/
+
+#root {
+  min-height: 100vh;
+}
+
