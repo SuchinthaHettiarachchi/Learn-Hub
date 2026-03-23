@@ -4,6 +4,7 @@ import fs from "fs";
 
 const require = createRequire(import.meta.url);
 const pdfParse = require("pdf-parse");
+
 import Document from "../models/document.model.js";
 import Flashcard from "../models/flashcard.model.js";
 import GeneratedContent from "../models/generatedContent.model.js";
@@ -26,12 +27,7 @@ const difficultyInstructions = {
 // DOCUMENT MANAGEMENT
 // ══════════════════════════════════════════════════════════════════════════════
 
-/**
- * POST /api/content/upload
- * Saves PDF locally, extracts text, saves Document to DB.
- */
 export const uploadDocument = async (req, res) => {
-  // Validation
   if (!req.file) {
     return res.status(400).json({ message: "No PDF file uploaded." });
   }
@@ -41,18 +37,16 @@ export const uploadDocument = async (req, res) => {
   }
 
   try {
-    // Save document with "processing" status first
     const doc = new Document({
       userId: req.user?._id || req.body.userId || null,
       title: title.trim(),
       originalFileName: req.file.originalname,
-      filePath: req.file.path,  // local path e.g. server/uploads/1234-file.pdf
+      filePath: req.file.path,
       fileSize: req.file.size,
       status: "processing",
     });
     await doc.save();
 
-    // Extract text from the saved PDF file
     try {
       const fileBuffer = fs.readFileSync(req.file.path);
       const pdfData = await pdfParse(fileBuffer);
@@ -83,13 +77,8 @@ export const uploadDocument = async (req, res) => {
   }
 };
 
-/**
- * GET /api/content/documents
- * Returns all documents for the current user.
- */
 export const getDocuments = async (req, res) => {
   const userId = req.user?._id || req.query.userId;
-
   try {
     const query = userId ? { userId } : {};
     const documents = await Document.find(query)
@@ -101,10 +90,6 @@ export const getDocuments = async (req, res) => {
   }
 };
 
-/**
- * GET /api/content/documents/:id
- * Returns a single document.
- */
 export const getDocumentById = async (req, res) => {
   try {
     const doc = await Document.findById(req.params.id);
@@ -115,24 +100,15 @@ export const getDocumentById = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/content/documents/:id
- * Deletes document from DB, local file, and all associated content.
- */
 export const deleteDocument = async (req, res) => {
   try {
     const doc = await Document.findByIdAndDelete(req.params.id);
     if (!doc) return res.status(404).json({ message: "Document not found." });
-
-    // Delete local file
     if (doc.filePath && fs.existsSync(doc.filePath)) {
       fs.unlinkSync(doc.filePath);
     }
-
-    // Clean up associated generated content
     await Flashcard.deleteMany({ documentId: req.params.id });
     await GeneratedContent.deleteMany({ documentId: req.params.id });
-
     return res.status(200).json({ message: "Document deleted successfully." });
   } catch (err) {
     return res.status(500).json({ message: "Failed to delete document." });
@@ -143,10 +119,6 @@ export const deleteDocument = async (req, res) => {
 // AI CONTENT GENERATION
 // ══════════════════════════════════════════════════════════════════════════════
 
-/**
- * POST /api/content/flashcards
- * Body: { documentId, difficulty, userId }
- */
 export const generateFlashcards = async (req, res) => {
   const { documentId, difficulty, userId } = req.body;
 
@@ -212,10 +184,6 @@ ${textSnippet}
   }
 };
 
-/**
- * POST /api/content/summary
- * Body: { documentId, difficulty, userId }
- */
 export const generateSummary = async (req, res) => {
   const { documentId, difficulty, userId } = req.body;
 
@@ -271,10 +239,6 @@ ${textSnippet}
   }
 };
 
-/**
- * POST /api/content/explain
- * Body: { documentId, concept, difficulty, userId }
- */
 export const explainConcept = async (req, res) => {
   const { documentId, concept, difficulty, userId } = req.body;
 
@@ -332,9 +296,6 @@ ${textSnippet}
   }
 };
 
-/**
- * GET /api/content/history/:documentId
- */
 export const getContentHistory = async (req, res) => {
   const { documentId } = req.params;
   try {
