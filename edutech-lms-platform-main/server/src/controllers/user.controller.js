@@ -242,3 +242,48 @@ export const updateProfile = async (req, res) => {
         });
     }
 }
+
+
+
+
+// Controller for getting all users (Admin only)
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find()
+            .select('-password')
+            .populate('purchasedCourse', 'title amount')
+            .lean();
+
+        const usersWithStats = await Promise.all(
+            users.map(async (user) => {
+                const enrollmentCount = user.purchasedCourse?.length || 0;
+                const enrollmentValue = await User.findById(user._id)
+                    .select('purchasedCourse')
+                    .populate({
+                        path: 'purchasedCourse',
+                        select: 'amount'
+                    });
+                
+                const totalSpent = enrollmentValue.purchasedCourse.reduce((sum, course) => sum + (course.amount || 0), 0);
+
+                return {
+                    ...user,
+                    enrollmentCount,
+                    totalSpent
+                };
+            })
+        );
+
+        return res.status(200).json({
+            success: true,
+            data: usersWithStats,
+            total: usersWithStats.length
+        });
+    } catch (error) {
+        console.error('Get all users error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch users"
+        });
+    }
+};

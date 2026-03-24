@@ -24,7 +24,12 @@ export function AuthProvider({ children }) {
   // Fetch user on mount and when needed
   const fetchUser = async () => {
     try {
-      const response = await api.get('/getUser');
+      // Add a timeout to prevent infinite loading
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      const response = await api.get('/getUser', { signal: controller.signal });
+      clearTimeout(timeoutId);
       setUser(response.data);
       return response.data;
 

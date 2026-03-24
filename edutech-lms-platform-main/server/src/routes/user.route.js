@@ -1,7 +1,7 @@
 
 import express from "express"
-import { getUser, Login, Logout, Register, updateProfile } from "../controllers/user.controller.js";
-import { protectRoute } from "../middleware/auth.middleware.js";
+import { getUser, Login, Logout, Register, updateProfile, getAllUsers } from "../controllers/user.controller.js";
+import { protectRoute, adminRoute } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/upload.js";
 
 
@@ -13,6 +13,7 @@ userRoute.post("/login", Login);
 userRoute.get("/getUser", protectRoute, getUser);
 userRoute.post("/logout", protectRoute, Logout);
 userRoute.post('/updateProfile', protectRoute, upload.single("profilePhoto"), updateProfile);
+userRoute.get("/admin/users", protectRoute, adminRoute, getAllUsers);
 
 
 export default userRoute;
