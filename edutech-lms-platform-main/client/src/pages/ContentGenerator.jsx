@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../lib/auth.jsx";
 import {
   Layers, BookOpen, Lightbulb, Brain, ChevronLeft,
   Loader2, FileText, CheckCircle
@@ -31,7 +32,7 @@ export default function ContentGenerator() {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState(null);
 
-  const DEMO_USER_ID = "demo-user-123";
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchDoc = async () => {
@@ -67,13 +68,13 @@ export default function ContentGenerator() {
     try {
       let res;
       if (activeTab === "flashcards") {
-        res = await axios.post("/api/content/flashcards", { documentId, difficulty, userId: DEMO_USER_ID });
+        res = await axios.post("/api/content/flashcards", { documentId, difficulty, userId: user._id });
         setResult({ type: "flashcards", cards: res.data.cards, difficulty });
       } else if (activeTab === "summary") {
-        res = await axios.post("/api/content/summary", { documentId, difficulty, userId: DEMO_USER_ID });
+        res = await axios.post("/api/content/summary", { documentId, difficulty, userId: user._id });
         setResult({ type: "summary", content: res.data.content, difficulty });
       } else if (activeTab === "explain") {
-        res = await axios.post("/api/content/explain", { documentId, concept, difficulty, userId: DEMO_USER_ID });
+        res = await axios.post("/api/content/explain", { documentId, concept, difficulty, userId: user._id });
         setResult({ type: "explanation", content: res.data.content, concept: res.data.concept, difficulty });
       }
     } catch (err) {
