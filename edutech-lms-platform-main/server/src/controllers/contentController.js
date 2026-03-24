@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import { createRequire } from "module";
 import fs from "fs";
 
@@ -9,9 +9,18 @@ import Document from "../models/document.model.js";
 import Flashcard from "../models/flashcard.model.js";
 import GeneratedContent from "../models/generatedContent.model.js";
 
-// ── Gemini setup ────────────────────────────────────────────────────────────
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+// ── Groq setup ────────────────────────────────────────────────────────────
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+// ── Helper: call Groq AI ──────────────────────────────────────────────────
+const askGroq = async (prompt) => {
+  const response = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
+  });
+  return response.choices[0].message.content;
+};
 
 // ── Difficulty prompt modifiers ─────────────────────────────────────────────
 const difficultyInstructions = {
@@ -146,7 +155,7 @@ Each flashcard must have:
 - "front": a question or term (keep it concise)
 - "back": the answer or definition
 
-Respond ONLY with a valid JSON array. No markdown, no extra text.
+Respond ONLY with a valid JSON array. No markdown, no extra text, no code blocks.
 
 Format:
 [
@@ -158,9 +167,9 @@ Document text:
 ${textSnippet}
 """`;
 
-    const result = await model.generateContent(prompt);
-    const rawText = result.response.text().replace(/```json|```/g, "").trim();
-    const cards = JSON.parse(rawText);
+    const rawText = await askGroq(prompt);
+    const cleanText = rawText.replace(/```json|```/g, "").trim();
+    const cards = JSON.parse(cleanText);
 
     const flashcard = new Flashcard({
       userId: userId || req.user?._id || null,
@@ -214,22 +223,21 @@ Document text:
 ${textSnippet}
 """`;
 
-    const result = await model.generateContent(prompt);
-    const content = result.response.text().trim();
+    const content = await askGroq(prompt);
 
     const savedContent = new GeneratedContent({
       userId: userId || req.user?._id || null,
       documentId,
       type: "summary",
       difficulty,
-      content,
+      content: content.trim(),
     });
     await savedContent.save();
 
     return res.status(201).json({
       message: "Summary generated successfully.",
       contentId: savedContent._id,
-      content,
+      content: content.trim(),
       difficulty,
       topic: doc.title,
     });
@@ -270,15 +278,14 @@ Document text:
 ${textSnippet}
 """`;
 
-    const result = await model.generateContent(prompt);
-    const content = result.response.text().trim();
+    const content = await askGroq(prompt);
 
     const savedContent = new GeneratedContent({
       userId: userId || req.user?._id || null,
       documentId,
       type: "explanation",
       difficulty,
-      content,
+      content: content.trim(),
       concept: concept.trim(),
     });
     await savedContent.save();
@@ -286,7 +293,7 @@ ${textSnippet}
     return res.status(201).json({
       message: "Explanation generated successfully.",
       contentId: savedContent._id,
-      content,
+      content: content.trim(),
       concept: concept.trim(),
       difficulty,
     });
