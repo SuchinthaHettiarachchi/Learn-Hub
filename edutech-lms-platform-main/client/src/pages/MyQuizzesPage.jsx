@@ -61,7 +61,10 @@ async function generateQuizFromPDFs(files, difficulty) {
   const pdfContents = await Promise.all(
     files.map(async (f) => {
       const b64 = await readFileAsBase64(f);
-      return { type: "document", source: { type: "base64", media_type: "application/pdf", data: b64 } };
+      return {
+        type: "document",
+        source: { type: "base64", media_type: "application/pdf", data: b64 },
+      };
     })
   );
 
@@ -121,11 +124,17 @@ function ScoreRing({ score, total }) {
   return (
     <div className="relative inline-flex items-center justify-center">
       <svg width="120" height="120" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="60" cy="60" r={r} fill="none" strokeWidth="8"
-          className="stroke-slate-100 dark:stroke-slate-800" />
-        <circle cx="60" cy="60" r={r} fill="none" stroke={color} strokeWidth="8"
-          strokeDasharray={`${dash} ${circ - dash}`} strokeLinecap="round"
-          style={{ transition: "stroke-dasharray 1s ease" }} />
+        <circle
+          cx="60" cy="60" r={r} fill="none" strokeWidth="8"
+          className="stroke-slate-100 dark:stroke-slate-800"
+        />
+        <circle
+          cx="60" cy="60" r={r} fill="none"
+          stroke={color} strokeWidth="8"
+          strokeDasharray={`${dash} ${circ - dash}`}
+          strokeLinecap="round"
+          style={{ transition: "stroke-dasharray 1s ease" }}
+        />
       </svg>
       <div className="absolute text-center">
         <div className="text-2xl font-bold" style={{ color }}>{pct}%</div>
@@ -167,7 +176,8 @@ export function MyQuizzesPage() {
     addFiles(e.dataTransfer.files);
   };
 
-  const removeFile = (i) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
+  const removeFile = (i) =>
+    setFiles((prev) => prev.filter((_, idx) => idx !== i));
 
   const handleGenerate = async () => {
     if (!quizName.trim()) {
@@ -198,7 +208,12 @@ export function MyQuizzesPage() {
     setConfirmed(true);
     setAnswers((prev) => [
       ...prev,
-      { questionId: q.id, selected, correct: q.correct, isCorrect: selected === q.correct },
+      {
+        questionId: q.id,
+        selected,
+        correct: q.correct,
+        isCorrect: selected === q.correct,
+      },
     ]);
   };
 
@@ -231,18 +246,16 @@ export function MyQuizzesPage() {
 
   if (phase === "upload") {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 py-12">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="min-h-screen bg-white dark:bg-slate-950 pt-2 pb-6 px-6">
+        <div className="max-w-[1800px] mx-auto">
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
-                AI-Powered
+                AI-Powered Quiz Generator
               </p>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
-                Intelligent Quiz System
-              </h1>
+              
             </div>
             <Link to="/dashboard">
               <Button variant="ghost" className="gap-2 text-slate-600 dark:text-slate-400">
@@ -253,7 +266,7 @@ export function MyQuizzesPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {/* Left: Upload + Config */}
+            {/* Left: Upload + Config — takes 2 cols */}
             <div className="lg:col-span-2 space-y-6">
 
               {/* Drop Zone Card */}
@@ -279,8 +292,10 @@ export function MyQuizzesPage() {
                       : "border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/40"
                   }`}
                 >
-                  <input ref={inputRef} type="file" accept=".pdf" multiple
-                    className="hidden" onChange={(e) => addFiles(e.target.files)} />
+                  <input
+                    ref={inputRef} type="file" accept=".pdf" multiple
+                    className="hidden" onChange={(e) => addFiles(e.target.files)}
+                  />
                   <div className="flex flex-col items-center gap-3">
                     <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl">
                       <Upload className="h-8 w-8 text-blue-600 dark:text-blue-400" />
@@ -300,11 +315,16 @@ export function MyQuizzesPage() {
                 {files.length > 0 && (
                   <div className="mt-4 space-y-2">
                     {files.map((f, i) => (
-                      <div key={i} className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl">
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl"
+                      >
                         <div className="p-1.5 bg-white dark:bg-slate-800 rounded-lg">
                           <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <span className="flex-1 text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{f.name}</span>
+                        <span className="flex-1 text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
+                          {f.name}
+                        </span>
                         <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
                           {(f.size / 1024).toFixed(0)} KB
                         </span>
@@ -316,22 +336,24 @@ export function MyQuizzesPage() {
                         </button>
                       </div>
                     ))}
-                    <p className="text-xs text-slate-400 dark:text-slate-500 pl-1">{files.length}/4 files uploaded</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 pl-1">
+                      {files.length}/4 files uploaded
+                    </p>
                   </div>
                 )}
               </div>
 
-              {/* Difficulty Card — shown after files added */}
+              {/* Quiz Name + Difficulty — shown after files added */}
               {files.length > 0 && (
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-lg">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-3">
                     <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                       <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    Select Difficulty Level
+                    Configure Your Quiz
                   </h2>
                   <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 ml-12">
-                    Choose how challenging you want the questions to be
+                    Name your quiz and choose a difficulty level
                   </p>
 
                   {/* Quiz Name */}
@@ -342,17 +364,20 @@ export function MyQuizzesPage() {
                     <input
                       type="text"
                       value={quizName}
-                      onChange={(e) => setQuizName(e.target.value)}
+                      onChange={(e) => { setQuizName(e.target.value); setError(null); }}
                       placeholder="e.g., Chapter 3 Review, Midterm Prep…"
-                      className="w-full h-11 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm font-medium focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+                      className="w-full h-11 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm font-medium focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
                     />
-                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">This name will appear on your quiz and results page</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
+                      This name will appear on your quiz and results page
+                    </p>
                   </div>
 
+                  {/* Difficulty */}
                   <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     Difficulty Level <span className="text-rose-500">*</span>
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-3 mb-6">
                     {Object.entries(DIFFICULTY_CONFIG).map(([key, cfg]) => {
                       const Icon = cfg.icon;
                       const active = difficulty === key;
@@ -366,7 +391,11 @@ export function MyQuizzesPage() {
                               : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-900"
                           }`}
                         >
-                          <Icon className={`h-5 w-5 mx-auto mb-2 ${active ? cfg.colorClass : "text-slate-400 dark:text-slate-500"}`} />
+                          <Icon
+                            className={`h-5 w-5 mx-auto mb-2 ${
+                              active ? cfg.colorClass : "text-slate-400 dark:text-slate-500"
+                            }`}
+                          />
                           <p className={`text-sm font-bold ${active ? cfg.colorClass : "text-slate-700 dark:text-slate-300"}`}>
                             {cfg.label}
                           </p>
@@ -379,7 +408,7 @@ export function MyQuizzesPage() {
                   </div>
 
                   {error && (
-                    <div className="mt-4 flex items-center gap-2 p-3 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-900/50 rounded-xl text-rose-600 dark:text-rose-400 text-sm">
+                    <div className="mb-4 flex items-center gap-2 p-3 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-900/50 rounded-xl text-rose-600 dark:text-rose-400 text-sm">
                       <AlertCircle className="h-4 w-4 shrink-0" /> {error}
                     </div>
                   )}
@@ -388,7 +417,7 @@ export function MyQuizzesPage() {
                     onClick={handleGenerate}
                     disabled={loading || !quizName.trim()}
                     size="lg"
-                    className="w-full h-12 mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2"
+                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-100 disabled:dark:bg-slate-800 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors"
                   >
                     {loading ? (
                       <>
@@ -408,7 +437,7 @@ export function MyQuizzesPage() {
 
             {/* Right: Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-32 space-y-4">
+              <div className="sticky top-6 space-y-4">
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
@@ -417,10 +446,10 @@ export function MyQuizzesPage() {
                   </h3>
                   <ul className="space-y-4">
                     {[
-                      { icon: Upload,   title: "Upload PDFs",     desc: "Add up to 4 study documents" },
-                      { icon: Brain,    title: "AI Generates",    desc: "Claude reads & crafts questions" },
-                      { icon: Target,   title: "Auto-Graded",     desc: "Instant scoring & feedback" },
-                      { icon: BarChart3,title: "Review Results",  desc: "Detailed explanations per answer" },
+                      { icon: Upload,    title: "Upload PDFs",    desc: "Add up to 4 study documents" },
+                      { icon: Brain,     title: "AI Generates",   desc: "Claude reads & crafts questions" },
+                      { icon: Target,    title: "Auto-Graded",    desc: "Instant scoring & feedback" },
+                      { icon: BarChart3, title: "Review Results", desc: "Detailed explanations per answer" },
                     ].map(({ icon: Icon, title, desc }) => (
                       <li key={title} className="flex items-start gap-3">
                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-lg shrink-0">
@@ -467,31 +496,35 @@ export function MyQuizzesPage() {
     const q = quiz.questions[currentQ];
     const progress = (currentQ / quiz.questions.length) * 100;
     const diffCfg = DIFFICULTY_CONFIG[difficulty];
-    const Icon = diffCfg.icon;
+    const DiffIcon = diffCfg.icon;
 
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 py-12">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="min-h-screen bg-white dark:bg-slate-950 pt-2 pb-6 px-6">
+        <div className="max-w-[1800px] mx-auto">
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
                 {quizName}
               </p>
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                 Question {currentQ + 1}
-                <span className="text-slate-400 dark:text-slate-600 font-normal"> / {quiz.questions.length}</span>
+                <span className="text-slate-400 dark:text-slate-600 font-normal">
+                  {" "}/ {quiz.questions.length}
+                </span>
               </h1>
             </div>
-            <span className={`inline-flex items-center gap-2 px-4 py-2 ${diffCfg.bgClass} border ${diffCfg.borderClass} ${diffCfg.colorClass} rounded-lg text-sm font-semibold`}>
-              <Icon className="h-4 w-4" />
+            <span
+              className={`inline-flex items-center gap-2 px-4 py-2 ${diffCfg.bgClass} border ${diffCfg.borderClass} ${diffCfg.colorClass} rounded-lg text-sm font-semibold`}
+            >
+              <DiffIcon className="h-4 w-4" />
               {diffCfg.label}
             </span>
           </div>
 
           {/* Progress bar */}
-          <div className="h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mb-8 overflow-hidden">
+          <div className="h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mb-7 overflow-hidden">
             <div
               className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
@@ -500,7 +533,7 @@ export function MyQuizzesPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {/* Question */}
+            {/* Question area */}
             <div className="lg:col-span-2 space-y-5">
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-lg">
 
@@ -565,8 +598,12 @@ export function MyQuizzesPage() {
                           {String.fromCharCode(65 + i)}
                         </span>
                         <span className="flex-1 text-sm text-slate-700 dark:text-slate-300 font-medium">{opt}</span>
-                        {confirmed && i === q.correct  && <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />}
-                        {confirmed && i === selected && i !== q.correct && <XCircle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0" />}
+                        {confirmed && i === q.correct && (
+                          <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        )}
+                        {confirmed && i === selected && i !== q.correct && (
+                          <XCircle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0" />
+                        )}
                       </button>
                     );
                   })}
@@ -575,8 +612,12 @@ export function MyQuizzesPage() {
                 {/* Explanation */}
                 {confirmed && (
                   <div className="mt-5 p-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl">
-                    <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">Explanation</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{q.explanation}</p>
+                    <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
+                      Explanation
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {q.explanation}
+                    </p>
                   </div>
                 )}
 
@@ -613,7 +654,7 @@ export function MyQuizzesPage() {
 
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-32 space-y-4">
+              <div className="sticky top-6 space-y-4">
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg">
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
@@ -636,11 +677,14 @@ export function MyQuizzesPage() {
                       };
 
                       return (
-                        <div key={i} className={`flex items-center gap-3 p-2.5 rounded-lg text-xs font-medium ${rowStyle[state]}`}>
+                        <div
+                          key={i}
+                          className={`flex items-center gap-3 p-2.5 rounded-lg text-xs font-medium ${rowStyle[state]}`}
+                        >
                           <span className="font-bold w-5">Q{i + 1}</span>
                           <span className="flex-1">
                             {i < currentQ
-                              ? (ans?.isCorrect ? "Correct ✓" : "Incorrect ✗")
+                              ? ans?.isCorrect ? "Correct ✓" : "Incorrect ✗"
                               : i === currentQ ? "Current question"
                               : "Upcoming"}
                           </span>
@@ -657,7 +701,9 @@ export function MyQuizzesPage() {
                   </div>
                   <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl text-center">
                     <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{score}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">of {answers.length} answered</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      of {answers.length} answered
+                    </p>
                   </div>
                 </div>
 
@@ -674,20 +720,27 @@ export function MyQuizzesPage() {
   if (phase === "results" && quiz) {
     const pct = Math.round((score / quiz.questions.length) * 100);
     const grade =
-      pct >= 90 ? { label: "Excellent!",       colorClass: "text-emerald-600 dark:text-emerald-400", bgClass: "bg-emerald-50 dark:bg-emerald-900/20", borderClass: "border-emerald-200 dark:border-emerald-900/50" }
-      : pct >= 75 ? { label: "Great Job!",      colorClass: "text-blue-600 dark:text-blue-400",       bgClass: "bg-blue-50 dark:bg-blue-900/20",       borderClass: "border-blue-100 dark:border-blue-900/50" }
-      : pct >= 60 ? { label: "Good Effort",     colorClass: "text-amber-600 dark:text-amber-400",     bgClass: "bg-amber-50 dark:bg-amber-900/20",     borderClass: "border-amber-200 dark:border-amber-900/50" }
-      :             { label: "Keep Practicing", colorClass: "text-rose-600 dark:text-rose-400",       bgClass: "bg-rose-50 dark:bg-rose-900/20",       borderClass: "border-rose-200 dark:border-rose-900/50" };
+      pct >= 90
+        ? { label: "Excellent!",       colorClass: "text-emerald-600 dark:text-emerald-400", borderClass: "border-emerald-200 dark:border-emerald-900/50" }
+        : pct >= 75
+        ? { label: "Great Job!",       colorClass: "text-blue-600 dark:text-blue-400",       borderClass: "border-blue-100 dark:border-blue-900/50" }
+        : pct >= 60
+        ? { label: "Good Effort",      colorClass: "text-amber-600 dark:text-amber-400",     borderClass: "border-amber-200 dark:border-amber-900/50" }
+        :  { label: "Keep Practicing", colorClass: "text-rose-600 dark:text-rose-400",       borderClass: "border-rose-200 dark:border-rose-900/50" };
 
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 py-12">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="min-h-screen bg-white dark:bg-slate-950 pt-2 pb-6 px-6">
+        <div className="max-w-[1800px] mx-auto">
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">Quiz Complete</p>
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">{quizName}</h1>
+              <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
+                Quiz Complete
+              </p>
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
+                {quizName}
+              </h1>
             </div>
             <Button
               variant="outline"
@@ -703,18 +756,25 @@ export function MyQuizzesPage() {
             <div className="lg:col-span-2 space-y-5">
 
               {/* Score banner */}
-              <div className={`bg-white dark:bg-slate-900 rounded-2xl border shadow-lg p-8 flex flex-col sm:flex-row items-center gap-8 ${grade.borderClass}`}>
+              <div
+                className={`bg-white dark:bg-slate-900 rounded-2xl border shadow-lg p-8 flex flex-col sm:flex-row items-center gap-8 ${grade.borderClass}`}
+              >
                 <ScoreRing score={score} total={quiz.questions.length} />
                 <div className="flex-1 text-center sm:text-left">
                   <p className={`text-2xl font-bold ${grade.colorClass}`}>{grade.label}</p>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{quizName} · {quiz.topic}</p>
-                  <div className="flex gap-3 mt-4 justify-center sm:justify-start">
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                    {quizName} · {quiz.topic}
+                  </p>
+                  <div className="flex gap-3 mt-4 justify-center sm:justify-start flex-wrap">
                     {[
                       { icon: Trophy, val: `${score}/${quiz.questions.length}`, label: "Correct" },
-                      { icon: Clock,  val: `~${elapsed}m`,                       label: "Time" },
-                      { icon: Target, val: DIFFICULTY_CONFIG[difficulty].label,  label: "Level" },
+                      { icon: Clock,  val: `~${elapsed}m`,                      label: "Time" },
+                      { icon: Target, val: DIFFICULTY_CONFIG[difficulty].label, label: "Level" },
                     ].map(({ icon: Ic, val, label }) => (
-                      <div key={label} className="p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl text-center min-w-[70px]">
+                      <div
+                        key={label}
+                        className="p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl text-center min-w-[70px]"
+                      >
                         <Ic className="h-4 w-4 text-blue-600 dark:text-blue-400 mx-auto mb-1" />
                         <p className="text-sm font-bold text-slate-900 dark:text-white">{val}</p>
                         <p className="text-xs text-slate-400">{label}</p>
@@ -740,7 +800,13 @@ export function MyQuizzesPage() {
                     }`}
                   >
                     <div className="flex items-start gap-4">
-                      <div className={`p-2 rounded-xl shrink-0 ${correct ? "bg-emerald-50 dark:bg-emerald-900/20" : "bg-rose-50 dark:bg-rose-900/20"}`}>
+                      <div
+                        className={`p-2 rounded-xl shrink-0 ${
+                          correct
+                            ? "bg-emerald-50 dark:bg-emerald-900/20"
+                            : "bg-rose-50 dark:bg-rose-900/20"
+                        }`}
+                      >
                         {correct
                           ? <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                           : <XCircle className="h-5 w-5 text-rose-600 dark:text-rose-400" />}
@@ -762,8 +828,12 @@ export function MyQuizzesPage() {
                           </div>
                         )}
                         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-lg">
-                          <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Explanation</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{q.explanation}</p>
+                          <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">
+                            Explanation
+                          </p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            {q.explanation}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -774,7 +844,7 @@ export function MyQuizzesPage() {
 
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-32 space-y-4">
+              <div className="sticky top-6 space-y-4">
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-lg">
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
@@ -788,7 +858,9 @@ export function MyQuizzesPage() {
                     </div>
                     <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl">
                       <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Correct Answers</p>
-                      <p className="text-2xl font-bold text-slate-900 dark:text-white">{score}/{quiz.questions.length}</p>
+                      <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                        {score}/{quiz.questions.length}
+                      </p>
                     </div>
                   </div>
                   <Button
