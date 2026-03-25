@@ -142,6 +142,7 @@ export function MyQuizzesPage() {
   const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [difficulty, setDifficulty] = useState("intermediate");
+  const [quizName, setQuizName] = useState("");
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -169,6 +170,10 @@ export function MyQuizzesPage() {
   const removeFile = (i) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
 
   const handleGenerate = async () => {
+    if (!quizName.trim()) {
+      setError("Please enter a name for your quiz before generating.");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -212,6 +217,7 @@ export function MyQuizzesPage() {
     setPhase("upload");
     setFiles([]);
     setQuiz(null);
+    setQuizName("");
     setAnswers([]);
     setSelected(null);
     setConfirmed(false);
@@ -226,7 +232,7 @@ export function MyQuizzesPage() {
   if (phase === "upload") {
     return (
       <div className="min-h-screen bg-white dark:bg-slate-950 py-12">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4 max-w-7xl">
 
           {/* Header */}
           <div className="flex items-center justify-between mb-10">
@@ -234,7 +240,7 @@ export function MyQuizzesPage() {
               <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
                 AI-Powered
               </p>
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
                 Intelligent Quiz System
               </h1>
             </div>
@@ -328,6 +334,24 @@ export function MyQuizzesPage() {
                     Choose how challenging you want the questions to be
                   </p>
 
+                  {/* Quiz Name */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                      Quiz Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={quizName}
+                      onChange={(e) => setQuizName(e.target.value)}
+                      placeholder="e.g., Chapter 3 Review, Midterm Prep…"
+                      className="w-full h-11 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm font-medium focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+                    />
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">This name will appear on your quiz and results page</p>
+                  </div>
+
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                    Difficulty Level <span className="text-rose-500">*</span>
+                  </label>
                   <div className="grid grid-cols-3 gap-3">
                     {Object.entries(DIFFICULTY_CONFIG).map(([key, cfg]) => {
                       const Icon = cfg.icon;
@@ -362,7 +386,7 @@ export function MyQuizzesPage() {
 
                   <Button
                     onClick={handleGenerate}
-                    disabled={loading}
+                    disabled={loading || !quizName.trim()}
                     size="lg"
                     className="w-full h-12 mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2"
                   >
@@ -447,13 +471,13 @@ export function MyQuizzesPage() {
 
     return (
       <div className="min-h-screen bg-white dark:bg-slate-950 py-12">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4 max-w-7xl">
 
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
-                {quiz.topic}
+                {quizName}
               </p>
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                 Question {currentQ + 1}
@@ -657,13 +681,13 @@ export function MyQuizzesPage() {
 
     return (
       <div className="min-h-screen bg-white dark:bg-slate-950 py-12">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4 max-w-7xl">
 
           {/* Header */}
           <div className="flex items-center justify-between mb-10">
             <div>
               <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">Quiz Complete</p>
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">Your Results</h1>
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">{quizName}</h1>
             </div>
             <Button
               variant="outline"
@@ -683,7 +707,7 @@ export function MyQuizzesPage() {
                 <ScoreRing score={score} total={quiz.questions.length} />
                 <div className="flex-1 text-center sm:text-left">
                   <p className={`text-2xl font-bold ${grade.colorClass}`}>{grade.label}</p>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{quiz.topic}</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{quizName} · {quiz.topic}</p>
                   <div className="flex gap-3 mt-4 justify-center sm:justify-start">
                     {[
                       { icon: Trophy, val: `${score}/${quiz.questions.length}`, label: "Correct" },
