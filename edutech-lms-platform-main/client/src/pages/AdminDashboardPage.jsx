@@ -36,6 +36,8 @@ export function AdminDashboardPage() {
   const [editThumbnail, setEditThumbnail] = useState(null);
   const [editingLoading, setEditingLoading] = useState(false);
   const [userSearchFilter, setUserSearchFilter] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);
+  const [editPdfFile, setEditPdfFile] = useState(null);
 
   useEffect(() => {
     fetchAllData();
@@ -152,8 +154,8 @@ export function AdminDashboardPage() {
 
   const handleCreateCourse = async (e) => {
     e.preventDefault();
-    if (!title || !description || !amount || !thumbnail) {
-      alert('Please fill all fields');
+    if (!title || !description) {
+      alert('Please fill all required fields (title and description)');
       return;
     }
 
@@ -162,8 +164,13 @@ export function AdminDashboardPage() {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
-      formData.append('amount', amount);
-      formData.append('thumbnail', thumbnail);
+      formData.append('amount', amount || 0);
+      if (thumbnail) {
+        formData.append('thumbnail', thumbnail);
+      }
+      if (pdfFile) {
+        formData.append('pdfFile', pdfFile);
+      }
 
       const response = await api.post('/createCourse', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -176,6 +183,7 @@ export function AdminDashboardPage() {
         setDescription('');
         setAmount('');
         setThumbnail(null);
+        setPdfFile(null);
         fetchCourses();
       }
     } catch (error) {
@@ -187,8 +195,8 @@ export function AdminDashboardPage() {
 
   const handleEditCourse = async (e, courseId) => {
     e.preventDefault();
-    if (!editTitle || !editDescription || !editAmount) {
-      alert('Please fill all fields');
+    if (!editTitle || !editDescription) {
+      alert('Please fill all required fields');
       return;
     }
 
@@ -197,9 +205,14 @@ export function AdminDashboardPage() {
       const formData = new FormData();
       formData.append('title', editTitle);
       formData.append('description', editDescription);
-      formData.append('amount', editAmount);
+      if (editAmount) {
+        formData.append('amount', editAmount);
+      }
       if (editThumbnail) {
         formData.append('thumbnail', editThumbnail);
+      }
+      if (editPdfFile) {
+        formData.append('pdfFile', editPdfFile);
       }
 
       const response = await api.put(`/editCourse/${courseId}`, formData, {
@@ -213,6 +226,7 @@ export function AdminDashboardPage() {
         setEditDescription('');
         setEditAmount('');
         setEditThumbnail(null);
+        setEditPdfFile(null);
         fetchCourses();
       }
     } catch (error) {
@@ -364,7 +378,7 @@ export function AdminDashboardPage() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₹{analytics?.totalRevenue?.toFixed(0) || '0'}</div>
+                <div className="text-2xl font-bold">Rs.{analytics?.totalRevenue?.toFixed(0) || '0'}</div>
                 <p className="text-xs text-muted-foreground">All time earnings</p>
               </CardContent>
             </Card>
@@ -498,8 +512,8 @@ export function AdminDashboardPage() {
                         <tr key={course._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
                           <td className="py-3 px-4 font-medium">{course.title}</td>
                           <td className="py-3 px-4">{course.enrollmentCount}</td>
-                          <td className="py-3 px-4">₹{course.amount}</td>
-                          <td className="py-3 px-4">₹{course.revenue?.toFixed(0) || '0'}</td>
+                          <td className="py-3 px-4">Rs.{course.amount}</td>
+                          <td className="py-3 px-4">Rs.{course.revenue?.toFixed(0) || '0'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -565,7 +579,7 @@ export function AdminDashboardPage() {
                               {user.enrollmentCount}
                             </span>
                           </td>
-                          <td className="py-3 px-4">₹{user.totalSpent?.toFixed(0) || '0'}</td>
+                          <td className="py-3 px-4">Rs.{user.totalSpent?.toFixed(0) || '0'}</td>
                           <td className="py-3 px-4 text-muted-foreground">
                             {new Date(user.createdAt).toLocaleDateString()}
                           </td>
@@ -622,22 +636,28 @@ export function AdminDashboardPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Price (INR)</label>
+                    <label className="text-sm font-medium">Price (LKR) - Optional</label>
                     <Input
                       type="number"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      required
                       min="0"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Thumbnail Image</label>
+                    <label className="text-sm font-medium">Thumbnail Image - Optional</label>
                     <Input
                       type="file"
                       accept="image/*"
                       onChange={(e) => setThumbnail(e.target.files[0])}
-                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Course PDF File - Optional</label>
+                    <Input
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => setPdfFile(e.target.files[0])}
                     />
                   </div>
                   <div className="flex gap-2">
@@ -701,12 +721,11 @@ export function AdminDashboardPage() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium">Price (INR)</label>
+                            <label className="text-sm font-medium">Price (LKR) - Optional</label>
                             <Input
                               type="number"
                               value={editAmount}
                               onChange={(e) => setEditAmount(e.target.value)}
-                              required
                               min="0"
                             />
                           </div>
@@ -716,6 +735,14 @@ export function AdminDashboardPage() {
                               type="file"
                               accept="image/*"
                               onChange={(e) => setEditThumbnail(e.target.files[0])}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Course PDF File (optional)</label>
+                            <Input
+                              type="file"
+                              accept=".pdf"
+                              onChange={(e) => setEditPdfFile(e.target.files[0])}
                             />
                           </div>
                           <div className="flex gap-2">
@@ -734,7 +761,7 @@ export function AdminDashboardPage() {
                               <h3 className="font-semibold text-lg">{course.title}</h3>
                               <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1">{course.description}</p>
                               <div className="flex flex-wrap gap-4 mt-3 text-sm">
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">₹{course.amount}</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">Rs.{course.amount}</span>
                                 <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
                                   <BookOpen className="h-4 w-4" />
                                   {course.modules?.length || 0} modules
@@ -911,7 +938,7 @@ export function AdminDashboardPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  ₹{analytics?.totalRevenue?.toFixed(0) || '0'} total revenue
+                  Rs.{analytics?.totalRevenue?.toFixed(0) || '0'} total revenue
                 </p>
                 <Button
                   onClick={() => exportToCSV(
@@ -951,7 +978,7 @@ export function AdminDashboardPage() {
                 </div>
                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
                   <p className="text-sm text-muted-foreground">Total Revenue</p>
-                  <p className="text-2xl font-bold">₹{analytics?.totalRevenue?.toFixed(0) || '0'}</p>
+                  <p className="text-2xl font-bold">Rs.{analytics?.totalRevenue?.toFixed(0) || '0'}</p>
                 </div>
               </div>
             </CardContent>

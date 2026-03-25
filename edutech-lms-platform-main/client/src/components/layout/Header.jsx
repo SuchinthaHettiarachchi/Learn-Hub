@@ -138,7 +138,7 @@ export function Header() {
                                 />
                               )}
                               <h4 className="font-medium text-sm line-clamp-2">{course.title}</h4>
-                              <p className="text-xs text-muted-foreground mt-1">₹{course.amount}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Rs.{course.amount}</p>
                             </div>
                           </Link>
                         ))
