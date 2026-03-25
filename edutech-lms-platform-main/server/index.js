@@ -1,5 +1,3 @@
-
-
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -14,9 +12,7 @@ import quizRoute from "./src/routes/quiz.route.js";
 import commentRoute from "./src/routes/comment.route.js";
 import paymentRoute from "./src/routes/payment.route.js";
 import analyticRoute from "./src/routes/analytic.route.js";
-
-
-
+import contentRoutes from "./src/routes/contentRoutes.js";
 
 // setting up the server and using middleware
 const app = express();
@@ -28,20 +24,15 @@ app.use(cors({
     credentials: true
 }));
 
-
-
 // routing the api
 app.use("/api", userRoute);
 app.use("/api", courseRoute);
 app.use("/api", moduleRoute);
 app.use("/api/quiz", quizRoute);
 app.use("/api/comment", commentRoute);
-
 app.use("/api/payment", paymentRoute);
 app.use("/api/analytic", analyticRoute);
-
-
-
+app.use("/api/content", contentRoutes);
 
 // connect db then starting server
 connectDB()
@@ -55,4 +46,3 @@ connectDB()
         console.error({ message: "Error connecting to the database", error: err });
         process.exit(1);
     });
-
