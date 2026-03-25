@@ -14,6 +14,7 @@ import quizRoute from "./src/routes/quiz.route.js";
 import commentRoute from "./src/routes/comment.route.js";
 import paymentRoute from "./src/routes/payment.route.js";
 import analyticRoute from "./src/routes/analytic.route.js";
+import chatRoute from "./src/routes/chat.route.js";
 
 
 
@@ -39,6 +40,7 @@ app.use("/api/comment", commentRoute);
 
 app.use("/api/payment", paymentRoute);
 app.use("/api/analytic", analyticRoute);
+app.use("/api/chat", chatRoute);
 
 
 
