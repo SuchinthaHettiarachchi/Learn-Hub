@@ -88,6 +88,13 @@ export function Header() {
                 </Button>
               </Link>
 
+              <Link to="/my-quizes">
+                <Button variant="outline" size="sm" className="hidden sm:flex">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">My Quizes</span>
+                </Button>
+              </Link>
+
               {/* My Purchased Courses dropdown (separate) */}
               <div className="relative">
                 <Button
