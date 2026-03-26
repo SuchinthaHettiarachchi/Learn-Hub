@@ -15,7 +15,7 @@ The main analytics hub showing real-time platform metrics.
 - **Total Users**: Active members on the platform
 - **Total Courses**: Published courses available
 - **Total Enrollments**: Student enrollments across all courses
-- **Total Revenue**: All-time earnings in LKR
+- **Total Revenue**: All-time earnings in INR
 
 #### Analytics Charts:
 - **Daily Revenue Chart** (Last 30 days): Bar chart showing daily revenue trends
@@ -65,7 +65,7 @@ Course creation and management interface.
 2. Fill in course details:
    - **Course Title**: Name of the course
    - **Description**: Detailed course description
-   - **Price (LKR)**: Course price in Sri Lankan Rupees
+   - **Price (INR)**: Course price in Indian Rupees
    - **Thumbnail Image**: Course cover image
 3. Click "Create Course" to publish
 
@@ -86,7 +86,7 @@ Course creation and management interface.
 
 #### Course Display Information:
 - Course title and description
-- Price in LKR
+- Price in INR
 - Number of modules
 - Hidden status indicator
 - Course thumbnail preview
@@ -192,7 +192,7 @@ Admin Dashboard
 
 ### Daily Revenue Chart
 - **X-axis**: Date (last 30 days)
-- **Y-axis**: Revenue in LKR
+- **Y-axis**: Revenue in INR
 - **Usage**: Track daily sales performance, identify peak revenue days
 
 ### Daily Enrollments Chart

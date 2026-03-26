@@ -1,15 +1,9 @@
-import express from "express";
+import express from 'express';
+import { protectRoute } from '../middleware/auth.middleware.js';
+import { freeEnroll } from '../controllers/course.controller.js';
 
-const router = express.Router();
+const enrollmentRoute = express.Router();
 
-// GET all enrollments
-router.get("/", (req, res) => {
-  res.json({ message: "Get all enrollments" });
-});
+enrollmentRoute.post('/free-enroll', protectRoute, freeEnroll);
 
-// POST enroll user
-router.post("/", (req, res) => {
-  res.json({ message: "User enrolled successfully" });
-});
-
-export default router;
+export default enrollmentRoute;

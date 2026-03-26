@@ -14,7 +14,6 @@ import paymentRoute from "./src/routes/payment.route.js";
 import analyticRoute from "./src/routes/analytic.route.js";
 import contentRoutes from "./src/routes/contentRoutes.js";
 
-
 // setting up the server and using middleware
 const app = express();
 app.use(express.json());
