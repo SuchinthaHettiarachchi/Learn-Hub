@@ -5,7 +5,7 @@ import { config } from "dotenv";
 config();
 
 export const ENV = {
-    MONGO_URI: process.env.MONGO_URI,
+    MONGO_URI: process.env.MONGO_URI || process.env.MONGODB_URI,
     PORT: process.env.PORT,
     JWT_SECRET: process.env.JWT_SECRET,
     ADMIN: process.env.ADMIN,

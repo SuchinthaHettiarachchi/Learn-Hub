@@ -1,5 +1,6 @@
  import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import {
     BookOpen,
@@ -35,7 +36,11 @@ export function LandingPage() {
                     setFeedbacks(validFeedbacks.slice(-3).reverse());
                     setSummary({
                         averageRating: data.summary.averageRating,
+<<<<<<<< Updated upstream:client/src/pages/LandingPage.jsx
                         totalReviews: validFeedbacks.length 
+========
+                        totalReviews: validFeedbacks.length
+>>>>>>>> Stashed changes:edutech-lms-platform-main/client/src/pages/LandingPage.jsx
                     });
                 }
             } catch (error) {
@@ -45,7 +50,10 @@ export function LandingPage() {
 
         fetchFeedbacks();
     }, []);
+<<<<<<<< Updated upstream:client/src/pages/LandingPage.jsx
 
+========
+>>>>>>>> Stashed changes:edutech-lms-platform-main/client/src/pages/LandingPage.jsx
     const stats = [
         { number: '10K+', label: 'Students', icon: Users },
         { number: '50+', label: 'Instructors', icon: BookOpen },
@@ -291,6 +299,7 @@ export function LandingPage() {
                         </p>
                     </div>
 
+<<<<<<<< Updated upstream:client/src/pages/LandingPage.jsx
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {feedbacks.length > 0 ? (
                             feedbacks.map((feedback, idx) => (
@@ -362,6 +371,85 @@ export function LandingPage() {
                             </div>
                         )}
                     </div>
+========
+                    {feedbacks.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {feedbacks.map((feedback, idx) => (
+                                <div
+                                    key={idx}
+                                    className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg transition-all duration-300"
+                                >
+                                    {/* Rating */}
+                                    <div className="flex gap-1 mb-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`h-5 w-5 ${i < (feedback.contentClarity || 0) ? "fill-yellow-400 text-yellow-400" : "fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700"}`}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Module Info */}
+                                    <div className="flex items-center gap-2 mb-4 text-sm text-blue-600 dark:text-blue-400 font-medium">
+                                        <BookOpen className="h-4 w-4" />
+                                        {feedback.moduleCode || "General Feedback"}
+                                    </div>
+
+                                    {/* Quote */}
+                                    <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed mb-6">
+                                        "{feedback.featureRequest || feedback.techIssueDetails || "Great learning experience!"}"
+                                    </p>
+
+                                    {/* Author */}
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                            <span className="text-white font-bold text-sm">{(feedback.studentId || "U").charAt(0).toUpperCase()}</span>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-slate-900 dark:text-white">{feedback.studentId || "Student"}</p>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400">{feedback.academicYear || "Learner"}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {testimonials.map((testimonial, idx) => (
+                                <div
+                                    key={idx}
+                                    className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg transition-all duration-300"
+                                >
+                                    {/* Rating */}
+                                    <div className="flex gap-1 mb-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className="h-5 w-5 fill-yellow-400 text-yellow-400"
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Quote */}
+                                    <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed mb-6">
+                                        "{testimonial.quote}"
+                                    </p>
+
+                                    {/* Author */}
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                            <span className="text-white font-bold text-sm">{testimonial.avatar}</span>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-slate-900 dark:text-white">{testimonial.author}</p>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400">{testimonial.role}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+>>>>>>>> Stashed changes:edutech-lms-platform-main/client/src/pages/LandingPage.jsx
                 </div>
             </section>
 
