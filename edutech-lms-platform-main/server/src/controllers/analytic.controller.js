@@ -140,3 +140,158 @@ export const getDailyAnalyticsController = async (req, res) => {
 };
 
 
+
+
+// Get top performing courses
+export const getTopCoursesController = async (req, res) => {
+    try {
+        const topCourses = await Course.aggregate([
+            {
+                $lookup: {
+                    from: "orders",
+                    localField: "_id",
+                    foreignField: "course",
+                    as: "orders"
+                }
+            },
+            {
+                $addFields: {
+                    enrollmentCount: { $size: "$orders" },
+                    revenue: { $sum: "$orders.totalAmount" }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    enrollmentCount: 1,
+                    revenue: 1,
+                    amount: 1,
+                    thumbnail: 1
+                }
+            },
+            {
+                $sort: { enrollmentCount: -1 }
+            },
+            {
+                $limit: 10
+            }
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            data: topCourses
+        });
+    } catch (error) {
+        console.error("Top courses error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch top courses"
+        });
+    }
+};
+
+
+
+
+// Get revenue trend over time
+export const getRevenueTrendController = async (req, res) => {
+    try {
+        const { months = 12 } = req.query;
+        const monthsNum = parseInt(months) || 12;
+        
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - monthsNum);
+
+        const revenueTrend = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m",
+                            date: "$createdAt"
+                        }
+                    },
+                    totalRevenue: { $sum: "$totalAmount" },
+                    totalOrders: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            data: revenueTrend
+        });
+    } catch (error) {
+        console.error("Revenue trend error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch revenue trend"
+        });
+    }
+};
+
+
+
+
+// Get user growth over time
+export const getUserGrowthController = async (req, res) => {
+    try {
+        const { months = 12 } = req.query;
+        const monthsNum = parseInt(months) || 12;
+        
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - monthsNum);
+
+        const userGrowth = await User.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m",
+                            date: "$createdAt"
+                        }
+                    },
+                    newUsers: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            data: userGrowth
+        });
+    } catch (error) {
+        console.error("User growth error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch user growth"
+        });
+    }
+};
+
+

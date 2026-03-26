@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 
 import { Enrollment } from "../models/enrollment.model.js";
 import { Course } from "../models/course.model.js";
+import { User } from "../models/user.model.js";
 
 
 
@@ -20,14 +21,14 @@ const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 export const createCourse = async (req, res) => {
     try {
         const { title, description, amount } = req.body;
-        if (!title || !description || !amount) {
+        if (!title || !description) {
             return res.status(400).json({
                 success: false,
-                message: "please provide all the details"
+                message: "Please provide title and description"
             });
         }
 
-        const price = Number(amount);
+        const price = amount ? Number(amount) : 0;
         if (isNaN(price) || price < 0) {
             return res.status(400).json({
                 success: false,
@@ -35,32 +36,60 @@ export const createCourse = async (req, res) => {
             });
         }
 
-        const thumbnail = req.file;
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: "Thumbnail is required",
-            });
+        const thumbnailFile = req.files?.thumbnail?.[0];
+        const pdfFile = req.files?.pdfFile?.[0];
+
+        let thumbnailUrl = null;
+        let pdfUrl = null;
+
+        // Upload thumbnail if provided
+        if (thumbnailFile) {
+            try {
+                const thumbnailBase64 = `data:${thumbnailFile.mimetype};base64,${thumbnailFile.buffer.toString("base64")}`;
+                const thumbnailUploadRes = await cloudinary.uploader.upload(thumbnailBase64, {
+                    folder: "lms/thumbnails"
+                });
+
+                if (!thumbnailUploadRes?.secure_url) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "Thumbnail upload failed",
+                    });
+                }
+                thumbnailUrl = thumbnailUploadRes.secure_url;
+            } catch (uploadError) {
+                console.log("Thumbnail upload error:", uploadError);
+                return res.status(500).json({
+                    success: false,
+                    message: "Thumbnail upload failed: " + uploadError.message,
+                });
+            }
         }
 
-        const base64 = `data:${req.file.mimetype};base64,${thumbnail.buffer.toString("base64")}`;
-        const uploadRes = await cloudinary.uploader.upload(base64, {
-            folder: "lms"
-        });
+        // Upload PDF if provided
+        if (pdfFile) {
+            try {
+                const pdfBase64 = `data:${pdfFile.mimetype};base64,${pdfFile.buffer.toString("base64")}`;
+                const pdfUploadRes = await cloudinary.uploader.upload(pdfBase64, {
+                    folder: "lms/pdfs",
+                    resource_type: "raw"
+                });
 
-        if (!uploadRes?.secure_url) {
-            return res.status(500).json({
-                success: false,
-                message: "Image upload failed",
-            });
+                if (pdfUploadRes?.secure_url) {
+                    pdfUrl = pdfUploadRes.secure_url;
+                }
+            } catch (uploadError) {
+                console.log("PDF upload error:", uploadError);
+                // Don't fail if PDF upload fails, just skip it
+            }
         }
-        const imageUrl = uploadRes.secure_url;
 
         const newCourse = await Course.create({
             userId: req.user._id,
             title,
             description,
-            thumbnail: imageUrl,
+            thumbnail: thumbnailUrl,
+            pdfFile: pdfUrl,
             amount: price
         });
 
@@ -75,7 +104,7 @@ export const createCourse = async (req, res) => {
         console.log("error in creating course: ", error);
         res.status(500).json({
             success: false,
-            message: "failed to create the course"
+            message: "failed to create the course: " + (error.message || "Unknown error")
         });
     }
 }
@@ -331,14 +360,42 @@ export const editCourse = async (req, res) => {
         }
 
         // Handle thumbnail if provided
-        if (req.file) {
-            const base64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
-            const uploadRes = await cloudinary.uploader.upload(base64, {
-                folder: "lms"
-            });
+        const thumbnailFile = req.files?.thumbnail?.[0];
+        if (thumbnailFile) {
+            try {
+                const thumbnailBase64 = `data:${thumbnailFile.mimetype};base64,${thumbnailFile.buffer.toString("base64")}`;
+                const uploadRes = await cloudinary.uploader.upload(thumbnailBase64, {
+                    folder: "lms/thumbnails"
+                });
 
-            if (uploadRes?.secure_url) {
-                course.thumbnail = uploadRes.secure_url;
+                if (uploadRes?.secure_url) {
+                    course.thumbnail = uploadRes.secure_url;
+                }
+            } catch (uploadError) {
+                console.log("Thumbnail upload error:", uploadError);
+                return res.status(500).json({
+                    success: false,
+                    message: "Thumbnail upload failed: " + uploadError.message,
+                });
+            }
+        }
+
+        // Handle PDF if provided
+        const pdfFile = req.files?.pdfFile?.[0];
+        if (pdfFile) {
+            try {
+                const pdfBase64 = `data:${pdfFile.mimetype};base64,${pdfFile.buffer.toString("base64")}`;
+                const pdfUploadRes = await cloudinary.uploader.upload(pdfBase64, {
+                    folder: "lms/pdfs",
+                    resource_type: "raw"
+                });
+
+                if (pdfUploadRes?.secure_url) {
+                    course.pdfFile = pdfUploadRes.secure_url;
+                }
+            } catch (uploadError) {
+                console.log("PDF upload error:", uploadError);
+                // Don't fail if PDF upload fails
             }
         }
 
@@ -354,7 +411,7 @@ export const editCourse = async (req, res) => {
         console.log("Error in editing course:", error);
         return res.status(500).json({
             success: false,
-            message: "Failed to edit course",
+            message: "Failed to edit course: " + (error.message || "Unknown error"),
         });
     }
 };
@@ -460,6 +517,68 @@ export const deleteCourse = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to delete course",
+        });
+    }
+};
+
+// controller for free enrollment (no payment required)
+export const freeEnroll = async (req, res) => {
+    try {
+        const { courseId } = req.body;
+        const userId = req.user._id;
+
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid course ID",
+            });
+        }
+
+        // Check if course exists
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({
+                success: false,
+                message: "Course not found",
+            });
+        }
+
+        // Check if already enrolled
+        const existingEnrollment = await Enrollment.findOne({
+            userId,
+            courseId,
+        });
+
+        if (existingEnrollment) {
+            return res.status(409).json({
+                success: false,
+                message: "You are already enrolled in this course",
+            });
+        }
+
+        // Create enrollment
+        const enrollment = await Enrollment.create({
+            userId,
+            courseId,
+        });
+
+        // Add course to user's purchased courses
+        await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { purchasedCourse: courseId } }
+        );
+
+        return res.status(201).json({
+            success: true,
+            message: "Successfully enrolled in the course",
+            enrollment,
+        });
+
+    } catch (error) {
+        console.error("Free enroll error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to enroll in course",
         });
     }
 };

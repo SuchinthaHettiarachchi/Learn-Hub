@@ -1,5 +1,3 @@
-
-
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './lib/theme';
 import { AuthProvider } from './lib/auth';
@@ -15,6 +13,8 @@ import { QuizPage } from './pages/QuizPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { PurchaseSuccessPage } from './pages/PurchaseSuccessPage';
+import DocumentsPage from './pages/DocumentsPage';
+import ContentGenerator from './pages/ContentGenerator';
 
 
 function App() {
@@ -81,6 +81,25 @@ function App() {
                   <PurchaseSuccessPage />
                 }
               />
+
+              {/* Member 2 - AI Content Generation */}
+              <Route
+                path="/content"
+                element={
+                  <ProtectedRoute>
+                    <DocumentsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/content/:documentId"
+                element={
+                  <ProtectedRoute>
+                    <ContentGenerator />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>
@@ -90,6 +109,4 @@ function App() {
   );
 }
 
-
 export default App;
-

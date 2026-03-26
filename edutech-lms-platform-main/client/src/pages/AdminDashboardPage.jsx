@@ -152,8 +152,8 @@ export function AdminDashboardPage() {
 
   const handleCreateCourse = async (e) => {
     e.preventDefault();
-    if (!title || !description || !amount || !thumbnail) {
-      alert('Please fill all fields');
+    if (!title || !description) {
+      alert('Please fill all required fields (title and description)');
       return;
     }
 
@@ -162,8 +162,13 @@ export function AdminDashboardPage() {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
-      formData.append('amount', amount);
-      formData.append('thumbnail', thumbnail);
+      formData.append('amount', amount || 0);
+      if (thumbnail) {
+        formData.append('thumbnail', thumbnail);
+      }
+      if (pdfFile) {
+        formData.append('pdfFile', pdfFile);
+      }
 
       const response = await api.post('/createCourse', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -176,6 +181,7 @@ export function AdminDashboardPage() {
         setDescription('');
         setAmount('');
         setThumbnail(null);
+        setPdfFile(null);
         fetchCourses();
       }
     } catch (error) {
@@ -187,8 +193,8 @@ export function AdminDashboardPage() {
 
   const handleEditCourse = async (e, courseId) => {
     e.preventDefault();
-    if (!editTitle || !editDescription || !editAmount) {
-      alert('Please fill all fields');
+    if (!editTitle || !editDescription) {
+      alert('Please fill all required fields');
       return;
     }
 
@@ -197,9 +203,14 @@ export function AdminDashboardPage() {
       const formData = new FormData();
       formData.append('title', editTitle);
       formData.append('description', editDescription);
-      formData.append('amount', editAmount);
+      if (editAmount) {
+        formData.append('amount', editAmount);
+      }
       if (editThumbnail) {
         formData.append('thumbnail', editThumbnail);
+      }
+      if (editPdfFile) {
+        formData.append('pdfFile', editPdfFile);
       }
 
       const response = await api.put(`/editCourse/${courseId}`, formData, {
@@ -213,6 +224,7 @@ export function AdminDashboardPage() {
         setEditDescription('');
         setEditAmount('');
         setEditThumbnail(null);
+        setEditPdfFile(null);
         fetchCourses();
       }
     } catch (error) {

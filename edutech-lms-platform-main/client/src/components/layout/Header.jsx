@@ -1,9 +1,8 @@
 
-
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../lib/theme';
 import { useAuth } from '../../lib/auth';
-import { Moon, Sun, LogOut, User, Home, GraduationCap, BookOpen } from 'lucide-react';
+import { Moon, Sun, LogOut, User, Home, GraduationCap, BookOpen, FileText } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
@@ -88,6 +87,14 @@ export function Header() {
                 </Button>
               </Link>
 
+              {/* My Content button - Member 2 */}
+              <Link to="/content">
+                <Button variant="outline" size="sm" className="hidden sm:flex">
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">My Content</span>
+                </Button>
+              </Link>
+
               {/* My Purchased Courses dropdown (separate) */}
               <div className="relative">
                 <Button
@@ -131,7 +138,7 @@ export function Header() {
                                 />
                               )}
                               <h4 className="font-medium text-sm line-clamp-2">{course.title}</h4>
-                              <p className="text-xs text-muted-foreground mt-1">₹{course.amount}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Rs.{course.amount}</p>
                             </div>
                           </Link>
                         ))
@@ -222,4 +229,3 @@ export function Header() {
     </header>
   );
 }
-
