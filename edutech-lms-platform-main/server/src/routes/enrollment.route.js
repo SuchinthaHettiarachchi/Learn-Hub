@@ -1,20 +1,9 @@
+import express from 'express';
+import { protectRoute } from '../middleware/auth.middleware.js';
+import { freeEnroll } from '../controllers/course.controller.js';
 
-import express from "express";
-import { protectRoute } from "../middleware/auth.middleware.js";
-import { freeEnroll } from "../controllers/course.controller.js";
+const enrollmentRoute = express.Router();
 
-const router = express.Router();
+enrollmentRoute.post('/free-enroll', protectRoute, freeEnroll);
 
-// ── Stub routes (not yet implemented) ───────────────────────────────────
-router.get("/", (req, res) => {
-  res.json({ message: "Get all enrollments" });
-});
-
-router.post("/", (req, res) => {
-  res.json({ message: "User enrolled successfully" });
-});
-
-// ── Implemented routes ──────────────────────────────────────────────────
-router.post("/free-enroll", protectRoute, freeEnroll);
-
-export default router;
+export default enrollmentRoute;

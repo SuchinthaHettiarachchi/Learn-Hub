@@ -30,7 +30,6 @@ import analyticRoute from "./src/routes/analytic.route.js";
 import contentRoutes from "./src/routes/contentRoutes.js";
 import enrollmentRoute from "./src/routes/enrollment.route.js";
 
-
 // setting up the server and using middleware
 const app = express();
 app.use(express.json());
