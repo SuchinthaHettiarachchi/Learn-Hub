@@ -1,4 +1,15 @@
-
+/**
+ * Analytics Routes (Admin Dashboard)
+ * 
+ * All routes require JWT + admin authorization.
+ * Powers the admin dashboard with business intelligence data.
+ * 
+ *   GET /api/analytic/getAnalytic    — Overall stats (users, courses, enrollments, revenue)
+ *   GET /api/analytic/getDailyData   — Daily enrollment + revenue (requires startDate, endDate)
+ *   GET /api/analytic/topCourses     — Top 10 courses by enrollment count
+ *   GET /api/analytic/revenueTrend   — Monthly revenue for past N months
+ *   GET /api/analytic/userGrowth     — Monthly new user registrations for past N months
+ */
 
 import express from 'express'
 import { adminRoute, protectRoute } from '../middleware/auth.middleware.js'

@@ -1,3 +1,16 @@
+/**
+ * User Model
+ * 
+ * Represents a platform user (student or admin).
+ * Authentication: email/password with bcrypt hashing.
+ * Admin detection: compared against ENV.ADMIN email in auth middleware.
+ * 
+ * Relationships:
+ *   - purchasedCourse[] → references Course documents the user has enrolled in
+ * 
+ * NOTE: The 'aadmin' field appears to be a typo. Controllers reference 'user.admin'
+ *       which doesn't match this schema field. Consider renaming to 'admin'.
+ */
 
 import mongoose from "mongoose";
 
@@ -10,29 +23,28 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true               // Enforces one account per email
     },
     password: {
         type: String,
-        required: true
+        required: true             // Stored as bcrypt hash (salt rounds: 10)
     },
     aadmin: {
         type: Boolean,
-        default: false
+        default: false             // NOTE: Possible typo — controllers set 'user.admin' instead
     },
     purchasedCourse: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Course"
+            ref: "Course"          // Duplicates Enrollment collection — kept for quick lookups
         }
     ],
     profilePhoto: {
         type: String,
-        default: "https://www.pngmart.com/files/23/Profile-PNG-Photo.png"
+        default: "https://www.pngmart.com/files/23/Profile-PNG-Photo.png"  // Fallback avatar
     },
 
-}, { timestamps: true })
+}, { timestamps: true })           // Adds createdAt and updatedAt fields automatically
 
 // creating and exporting the user model
 export const User = mongoose.model("User", userSchema);
-

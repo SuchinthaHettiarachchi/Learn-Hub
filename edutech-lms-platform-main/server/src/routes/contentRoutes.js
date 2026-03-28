@@ -1,3 +1,24 @@
+/**
+ * AI Content Generation Routes (Groq / Llama 3.3 70B)
+ * 
+ * Manages PDF document uploads and AI-powered content generation.
+ * 
+ * ⚠️  WARNING: None of these routes have authentication middleware.
+ *     Any user (even unauthenticated) can access these endpoints.
+ *     Consider adding protectRoute middleware for production use.
+ * 
+ * Document Management:
+ *   POST   /api/content/upload              — Upload PDF (10MB max), extract text
+ *   GET    /api/content/documents           — List all documents
+ *   GET    /api/content/documents/:id       — Get single document with text
+ *   DELETE /api/content/documents/:id       — Delete document + related AI content
+ * 
+ * AI Generation:
+ *   POST   /api/content/flashcards          — Generate 8 flashcards from document
+ *   POST   /api/content/summary             — Generate 3-5 paragraph summary
+ *   POST   /api/content/explain             — Explain a specific concept
+ *   GET    /api/content/history/:documentId — Get generation history for document
+ */
 import express from "express";
 import multer from "multer";
 import path from "path";
@@ -16,12 +37,20 @@ import {
 const router = express.Router();
 
 // ── Local disk storage setup ────────────────────────────────────────────────
+import fs from "fs";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Ensure uploads directory exists (prevents ENOENT errors on fresh clones)
+const uploadsDir = path.join(__dirname, "../../uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../../uploads")); // server/uploads/
+    cb(null, uploadsDir); // server/uploads/
   },
   filename: (req, file, cb) => {
     const uniqueName = `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`;

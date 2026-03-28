@@ -1,4 +1,14 @@
-
+/**
+ * API Client (Axios Instance)
+ * 
+ * Centralized HTTP client for all backend API calls.
+ * 
+ * Key configuration:
+ *   - baseURL: Uses VITE_API_URL in production, or '' in dev (proxied by Vite)
+ *   - withCredentials: true — sends httpOnly JWT cookie with every request
+ *   - Request interceptor: Removes Content-Type for FormData (lets browser set multipart boundary)
+ *   - Response interceptor: Logs 401 errors but does NOT force redirect (handled by ProtectedRoute)
+ */
 
 import axios from 'axios';
 
