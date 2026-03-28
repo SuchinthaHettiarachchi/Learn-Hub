@@ -1,3 +1,18 @@
+/**
+ * Server Entry Point
+ * 
+ * Initializes the Express 5 application with:
+ *   1. Middleware: JSON parsing, cookie parser, URL encoding, CORS
+ *   2. API routes: 9 route groups mounted under /api
+ *   3. Database: MongoDB connection via Mongoose
+ * 
+ * Startup flow:
+ *   connectDB() → app.listen() → Server running
+ *   If DB connection fails → process.exit(1)
+ * 
+ * CORS: In development, allows any localhost origin.
+ *        In production, only allows ENV.CLIENT_URL.
+ */
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";

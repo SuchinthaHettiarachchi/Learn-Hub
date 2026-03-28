@@ -1,3 +1,22 @@
+/**
+ * App — Root Application Component
+ * 
+ * Provider hierarchy: ThemeProvider → AuthProvider → BrowserRouter → Layout → Routes
+ * 
+ * Route structure:
+ *   /                     — Landing page (public)
+ *   /login, /register     — Auth pages (public)
+ *   /dashboard            — User dashboard (protected)
+ *   /course/:id           — Course detail / enrollment (protected)
+ *   /course/:id/learn     — Course learning view with video modules (protected)
+ *   /quiz/:id             — AI-generated quiz (protected)
+ *   /profile              — User profile management (protected)
+ *   /admin                — Admin dashboard with analytics (admin only)
+ *   /purchase             — Post-payment success page
+ *   /content              — PDF document management (protected)
+ *   /content/:documentId  — AI content generation from PDF (protected)
+ *   *                     — Catch-all redirect to /
+ */
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './lib/theme';
 import { AuthProvider } from './lib/auth';
