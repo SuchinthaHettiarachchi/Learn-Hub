@@ -1,5 +1,3 @@
-
-
 import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
@@ -21,6 +19,12 @@ const questionSchema = new mongoose.Schema({
         type: String,
     },
     explanation:{
+        type: String
+    },
+    hint: {
+        type: String
+    },
+    concept: {
         type: String
     }
 }, { timestamps: true })

@@ -20,4 +20,5 @@ export const ENV = {
     STRIPE_SECRET_KEY:process.env.STRIPE_SECRET_KEY,
 
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
 }
