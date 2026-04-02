@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Questions Model
  * 
@@ -9,6 +10,8 @@
  *   - quizId → Parent Quiz this question belongs to
  */
 
+=======
+>>>>>>> Chanuka
 import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
@@ -30,7 +33,17 @@ const questionSchema = new mongoose.Schema({
         type: String,              // The correct answer string (matches one of the options)
     },
     explanation:{
+<<<<<<< HEAD
         type: String               // AI-generated explanation of why the answer is correct
+=======
+        type: String
+    },
+    hint: {
+        type: String
+    },
+    concept: {
+        type: String
+>>>>>>> Chanuka
     }
 }, { timestamps: true })
 

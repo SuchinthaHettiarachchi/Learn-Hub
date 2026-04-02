@@ -31,4 +31,5 @@ export const ENV = {
 
     // ── Google Gemini AI (Quiz Generation & Smart Search) ───
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
 }

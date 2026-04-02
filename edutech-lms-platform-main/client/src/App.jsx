@@ -29,6 +29,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { CourseDetailPage } from './pages/CourseDetailPage';
 import { CourseLearnPage } from './pages/CourseLearnPage';
 import { QuizPage } from './pages/QuizPage';
+import { MyQuizzesPage } from './pages/MyQuizzesPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { PurchaseSuccessPage } from './pages/PurchaseSuccessPage';
@@ -75,6 +76,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <QuizPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-quizes"
+                element={
+                  <ProtectedRoute>
+                    <MyQuizzesPage />
                   </ProtectedRoute>
                 }
               />

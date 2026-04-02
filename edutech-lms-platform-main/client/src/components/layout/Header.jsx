@@ -87,11 +87,19 @@ export function Header() {
                 </Button>
               </Link>
 
-              {/* My Content button - Member 2 */}
+              {/* My Content button */}
               <Link to="/content">
                 <Button variant="outline" size="sm" className="hidden sm:flex">
                   <FileText className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">My Content</span>
+                </Button>
+              </Link>
+
+              {/* My Quizes button */}
+              <Link to="/my-quizes">
+                <Button variant="outline" size="sm" className="hidden sm:flex">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">My Quizes</span>
                 </Button>
               </Link>
 

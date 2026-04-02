@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Quiz Model
  * 
@@ -11,16 +12,37 @@
  *   - questions[] → Question documents containing the actual MCQs
  */
 
+=======
+>>>>>>> Chanuka
 import mongoose from "mongoose";
 
 const quizSchema = new mongoose.Schema({
     userId:{
         type: mongoose.Schema.Types.ObjectId,
+<<<<<<< HEAD
         ref: "User"                // Quiz owner (each user gets their own quiz per module)
     },
     moduleId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Modules"             // The module this quiz was generated from
+=======
+        ref: "User",
+        required: true
+    },
+    moduleId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Modules",
+        // moduleId is optional for custom generated quizzes
+    },
+    title: {
+        type: String,
+    },
+    topic: {
+        type: String,
+    },
+    difficulty: {
+        type: String,
+>>>>>>> Chanuka
     },
     questions:[
         {
@@ -28,6 +50,9 @@ const quizSchema = new mongoose.Schema({
             ref: "Questions"       // Array of 10 AI-generated MCQ questions
         }
     ],
+    score: { type: Number, default: 0 },
+    totalQuestions: { type: Number, default: 0 },
+    isCompleted: { type: Boolean, default: false },
 }, { timestamps: true })
 
 // made the Quiz model and exported it

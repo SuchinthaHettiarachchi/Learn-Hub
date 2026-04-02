@@ -32,9 +32,9 @@ import enrollmentRoute from "./src/routes/enrollment.route.js";
 
 // setting up the server and using middleware
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (curl, mobile apps)
