@@ -15,7 +15,7 @@ import { Input } from '../components/ui/input';
 import {
   Search,
   BookOpen,
-  IndianRupee,
+  DollarSign,
   GraduationCap,
   Sparkles,
   TrendingUp,
@@ -223,9 +223,8 @@ export function DashboardPage() {
                   </p>
 
                   <div className="flex items-center justify-between mb-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-1 font-bold text-lg text-blue-600 dark:text-blue-400">
-                      <IndianRupee className="h-5 w-5" />
-                      {course.amount}
+                    <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 font-bold">
+                      <span>FREE</span>
                     </div>
                     {course.modules && (
                       <span className="text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
@@ -248,7 +247,7 @@ export function DashboardPage() {
                   ) : (
                     <Link to={`/course/${course._id}`} className="block">
                       <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg flex items-center justify-center gap-2 transition-all">
-                        Explore
+                        View Course
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </Link>

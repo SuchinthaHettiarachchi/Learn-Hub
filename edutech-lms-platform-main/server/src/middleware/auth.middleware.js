@@ -1,14 +1,30 @@
-
+/**
+ * Authentication & Authorization Middleware
+ * 
+ * Two middleware functions for securing API routes:
+ *   1. protectRoute — Verifies JWT token from httpOnly cookie
+ *   2. adminRoute  — Checks if authenticated user is the admin
+ * 
+ * Usage in routes:
+ *   - protectRoute only:           Any logged-in user can access
+ *   - protectRoute + adminRoute:   Only the admin user can access
+ */
 
 import jwt from 'jsonwebtoken'
 import { ENV } from '../config/env.js'
 import { User } from '../models/user.model.js'
 
 
-// if the user is loggedin or not
+/**
+ * protectRoute - Authentication middleware
+ * 
+ * Extracts JWT from the "token" cookie, verifies it, and attaches
+ * the full user document (minus password) to req.user.
+ * Returns 401 if token is missing, invalid, or expired.
+ */
 export const protectRoute = async (req, res, next) => {
     try {
-        // if the requested user do not have any token 
+        // Extract JWT from httpOnly cookie (set during login/register)
         const token = req.cookies.token;
         if (!token) {
             return res.status(401).json({
@@ -17,7 +33,7 @@ export const protectRoute = async (req, res, next) => {
             });
         }
 
-        // verify the token of the user 
+        // Verify token signature and expiration
         let decode;
         try {
             decode = jwt.verify(token, ENV.JWT_SECRET);
@@ -36,8 +52,8 @@ export const protectRoute = async (req, res, next) => {
             });
         }
 
-        // setting up the req.user
-        const user = await User.findById(decode.userId).select("-password") // this will not add password of the user 
+        // Attach user document to request for downstream controllers
+        const user = await User.findById(decode.userId).select("-password")
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -48,7 +64,6 @@ export const protectRoute = async (req, res, next) => {
         next();
         
     } catch (error) {
-        // for debugging any errors
         console.log("protectRoute error ", error);
         res.status(401).json({
             success: false,
@@ -59,7 +74,15 @@ export const protectRoute = async (req, res, next) => {
 
 
 
-// check if the user is an admin or not 
+/**
+ * adminRoute - Authorization middleware (must be used AFTER protectRoute)
+ * 
+ * Checks if the authenticated user's email matches the admin email
+ * defined in ENV.ADMIN. Returns 403 Forbidden if not an admin.
+ * 
+ * NOTE: Admin is determined by email comparison, not a database flag.
+ *       This means only one user (the ENV.ADMIN email) can be admin.
+ */
 export const adminRoute = async (req, res, next) => {
     try {
         if (req.user && req.user.email === ENV.ADMIN) {

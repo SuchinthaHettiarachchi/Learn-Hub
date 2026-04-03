@@ -1,4 +1,18 @@
-
+/**
+ * ProtectedRoute Component
+ * 
+ * Route guard that restricts access based on authentication and role.
+ * 
+ * Behavior:
+ *   - While loading: Shows loading spinner
+ *   - No user: Redirects to /login
+ *   - adminOnly=true && !isAdmin: Redirects to /
+ *   - Otherwise: Renders children
+ * 
+ * Usage:
+ *   <ProtectedRoute>           — Any authenticated user
+ *   <ProtectedRoute adminOnly> — Admin users only
+ */
 
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';

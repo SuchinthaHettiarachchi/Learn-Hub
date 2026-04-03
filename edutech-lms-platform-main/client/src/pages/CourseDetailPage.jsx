@@ -5,7 +5,7 @@ import api from '../lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { IndianRupee, BookOpen, PlayCircle, Plus, Video, Clock, Users, CheckCircle2, Sparkles, ArrowLeft } from 'lucide-react';
+import { DollarSign, BookOpen, PlayCircle, Plus, Video, Clock, Users, CheckCircle2, Sparkles, ArrowLeft, Download, Unlock } from 'lucide-react';
 
 export function CourseDetailPage() {
   const { id } = useParams();
@@ -77,19 +77,33 @@ export function CourseDetailPage() {
     }
   };
 
-  const handlePurchase = async () => {
+  const handleFreeAccess = async () => {
     try {
       setPurchasing(true);
-      const response = await api.post('/payment/checkout', {
-        products: { _id: id },
+      const response = await api.post('/enrollment/free-enroll', {
+        courseId: id,
       });
 
-      if (response.data.success && response.data.url) {
-        window.location.href = response.data.url;
+      if (response.data.success) {
+        alert('Course accessed successfully!');
+        window.location.reload();
       }
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to initiate payment');
+      alert(error.response?.data?.message || 'Failed to access course');
       setPurchasing(false);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    if (course.pdfFile) {
+      const link = document.createElement('a');
+      link.href = course.pdfFile;
+      link.download = `${course.title}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert('No PDF available for this course');
     }
   };
 
@@ -176,12 +190,12 @@ export function CourseDetailPage() {
                 </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{course.modules?.length || 0}</p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl">
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/50 rounded-xl">
                 <div className="flex items-center gap-2 mb-2">
-                  <IndianRupee className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Price</span>
+                  <Unlock className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Access</span>
                 </div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">₹{course.amount}</p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">FREE</p>
               </div>
               <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl">
                 <div className="flex items-center gap-2 mb-2">
@@ -193,40 +207,55 @@ export function CourseDetailPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col gap-3">
               {isPurchased ? (
-                <Link to={`/course/${id}/learn`} className="flex-1">
-                  <Button size="lg" className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center justify-center gap-2 rounded-lg">
-                    <PlayCircle className="h-5 w-5" />
-                    Start Learning Now
-                  </Button>
-                </Link>
-              ) : (
-                <Button
-                  size="lg"
-                  className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
-                  onClick={handlePurchase}
-                  disabled={purchasing}
-                >
-                  {purchasing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-5 w-5" />
-                      Enroll Now with Stripe
-                    </>
+                <>
+                  <Link to={`/course/${id}/learn`} className="w-full">
+                    <Button size="lg" className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center justify-center gap-2 rounded-lg">
+                      <PlayCircle className="h-5 w-5" />
+                      Start Learning Now
+                    </Button>
+                  </Link>
+                  {course.pdfFile && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="w-full h-12 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 font-semibold rounded-lg flex items-center justify-center gap-2"
+                      onClick={handleDownloadPDF}
+                    >
+                      <Download className="h-5 w-5" />
+                      Download PDF
+                    </Button>
                   )}
-                </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="lg"
+                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
+                    onClick={handleFreeAccess}
+                    disabled={purchasing}
+                  >
+                    {purchasing ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Unlock className="h-5 w-5" />
+                        Get Free Access
+                      </>
+                    )}
+                  </Button>
+                </>
               )}
 
               {isAdmin && (
                 <Button
                   variant="outline"
                   size="lg"
-                  className="sm:flex-1 h-12 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg"
+                  className="h-12 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg"
                   onClick={() => setShowAddModule(!showAddModule)}
                 >
                   <Plus className="h-5 w-5" />
@@ -304,9 +333,9 @@ export function CourseDetailPage() {
                 </h3>
 
                 <div className="space-y-4 mb-6">
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl">
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Price</p>
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">₹{course.amount}</p>
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/50 rounded-xl">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Cost</p>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">FREE</p>
                   </div>
 
                   <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl">
@@ -319,30 +348,44 @@ export function CourseDetailPage() {
                 </div>
 
                 {!isPurchased ? (
-                  <Button
-                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
-                    onClick={handlePurchase}
-                    disabled={purchasing}
-                  >
-                    {purchasing ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-4 w-4" />
-                        Enroll Now
-                      </>
-                    )}
-                  </Button>
+                  <div className="space-y-2">
+                    <Button
+                      className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
+                      onClick={handleFreeAccess}
+                      disabled={purchasing}
+                    >
+                      {purchasing ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Unlock className="h-4 w-4" />
+                          Get Free Access
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 ) : (
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/50 rounded-lg text-center">
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                      <p className="font-semibold text-green-600 dark:text-green-400">Already Enrolled</p>
+                  <div className="space-y-2">
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/50 rounded-lg text-center">
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <p className="font-semibold text-green-600 dark:text-green-400">Unlocked</p>
+                      </div>
+                      <p className="text-xs text-green-600 dark:text-green-400">Lifetime access</p>
                     </div>
-                    <p className="text-xs text-green-600 dark:text-green-400">Lifetime access</p>
+                    {course.pdfFile && (
+                      <Button
+                        className="w-full h-11 border-2 border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-950 font-semibold rounded-lg flex items-center justify-center gap-2 bg-transparent"
+                        variant="outline"
+                        onClick={handleDownloadPDF}
+                      >
+                        <Download className="h-4 w-4" />
+                        Download PDF
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>

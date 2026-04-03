@@ -1,5 +1,22 @@
-
-
+/**
+ * App — Root Application Component
+ * 
+ * Provider hierarchy: ThemeProvider → AuthProvider → BrowserRouter → Layout → Routes
+ * 
+ * Route structure:
+ *   /                     — Landing page (public)
+ *   /login, /register     — Auth pages (public)
+ *   /dashboard            — User dashboard (protected)
+ *   /course/:id           — Course detail / enrollment (protected)
+ *   /course/:id/learn     — Course learning view with video modules (protected)
+ *   /quiz/:id             — AI-generated quiz (protected)
+ *   /profile              — User profile management (protected)
+ *   /admin                — Admin dashboard with analytics (admin only)
+ *   /purchase             — Post-payment success page
+ *   /content              — PDF document management (protected)
+ *   /content/:documentId  — AI content generation from PDF (protected)
+ *   *                     — Catch-all redirect to /
+ */
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './lib/theme';
 import { AuthProvider } from './lib/auth';
@@ -16,6 +33,8 @@ import { MyQuizzesPage } from './pages/MyQuizzesPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { PurchaseSuccessPage } from './pages/PurchaseSuccessPage';
+import DocumentsPage from './pages/DocumentsPage';
+import ContentGenerator from './pages/ContentGenerator';
 
 
 function App() {
@@ -90,6 +109,25 @@ function App() {
                   <PurchaseSuccessPage />
                 }
               />
+
+              {/* Member 2 - AI Content Generation */}
+              <Route
+                path="/content"
+                element={
+                  <ProtectedRoute>
+                    <DocumentsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/content/:documentId"
+                element={
+                  <ProtectedRoute>
+                    <ContentGenerator />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>
@@ -99,6 +137,4 @@ function App() {
   );
 }
 
-
 export default App;
-
