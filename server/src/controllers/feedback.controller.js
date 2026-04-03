@@ -29,7 +29,9 @@ export const submitFeedback = async (req, res) => {
 
 export const getFeedbackSummary = async (req, res) => {
     try {
-        const feedbacks = await Feedback.find().populate("user", "fullName email");
+        const feedbacks = await Feedback.find()
+            .populate("user", "fullName email")
+            .sort({ createdAt: -1 });  // newest first
 
         // Content clarity average (1–5)
         const totalClarity = feedbacks.reduce((acc, curr) => acc + (curr.contentClarity || 0), 0);

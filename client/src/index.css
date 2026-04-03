@@ -90,7 +90,7 @@
   }
 
   .card-premium-hover {
-    @apply card-premium hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg;
+    @apply bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg;
   }
 
   /* Gradient Buttons */
@@ -145,9 +145,60 @@
     @apply py-12 md:py-16 px-4 md:px-8;
   }
 
-  /* Container Styles */
-  .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  /* Glassmorphism Classes */
+  .glass {
+    @apply bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border border-white/20 dark:border-slate-800/20 shadow-xl;
+  }
+
+  .glass-card {
+    @apply glass rounded-2xl overflow-hidden;
+  }
+
+  /* Advanced Gradients */
+  .bg-mesh {
+    background-color: hsla(222, 84%, 4.9%, 1);
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(217, 91%, 59%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(221, 83%, 53%, 0.15) 0px, transparent 50%);
+  }
+
+  /* Sidebar Styles */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-all duration-300;
+  }
+
+  .sidebar-link-active {
+    @apply bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:bg-blue-600 hover:text-white;
+  }
+
+  /* Table Enhancements */
+  .table-modern {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .table-modern th {
+    @apply px-6 py-4 font-semibold text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/50 text-xs uppercase tracking-wider text-left border-b border-slate-100 dark:border-slate-800;
+  }
+
+  .table-modern td {
+    @apply px-6 py-4 border-b border-slate-100 dark:border-slate-800 transition-colors;
+  }
+
+  .table-modern tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .table-modern tr:hover td {
+    @apply bg-slate-50/30 dark:bg-slate-900/30;
+  }
+
+  /* Action Tiles */
+  .action-tile {
+    @apply p-6 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300;
+  }
+
+  .action-tile-icon {
+    @apply p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300;
   }
 }
 

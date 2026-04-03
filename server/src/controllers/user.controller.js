@@ -1,6 +1,7 @@
 
 
 import { User } from "../models/user.model.js";
+import { Order } from "../models/order.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ENV } from "../config/env.js";
@@ -242,3 +243,112 @@ export const updateProfile = async (req, res) => {
         });
     }
 }
+
+
+
+// ─── ADMIN CRUD ───────────────────────────────────────────────────
+
+// GET /admin/users — return all users with enrollment count & total spent
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password').sort({ createdAt: -1 }).lean();
+
+        // Aggregate order stats per user
+        const orders = await Order.aggregate([
+            { $group: { _id: '$user', count: { $sum: 1 }, spent: { $sum: '$totalAmount' } } }
+        ]);
+        const statsMap = {};
+        orders.forEach(o => {
+            statsMap[o._id.toString()] = { enrollmentCount: o.count, totalSpent: o.spent };
+        });
+
+        const enriched = users.map(u => ({
+            ...u,
+            enrollmentCount: statsMap[u._id.toString()]?.enrollmentCount || 0,
+            totalSpent: statsMap[u._id.toString()]?.totalSpent || 0,
+        }));
+
+        return res.status(200).json({ success: true, data: enriched });
+    } catch (error) {
+        console.error('getAllUsers error:', error);
+        return res.status(500).json({ success: false, message: 'Failed to fetch users' });
+    }
+};
+
+
+// POST /admin/users — create a new user
+export const createUser = async (req, res) => {
+    try {
+        const { fullName, email, password, isAdmin } = req.body;
+
+        if (!fullName || !email || !password) {
+            return res.status(400).json({ success: false, message: 'fullName, email, and password are required' });
+        }
+
+        const existing = await User.findOne({ email: email.toLowerCase() });
+        if (existing) {
+            return res.status(400).json({ success: false, message: 'A user with that email already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await User.create({
+            fullName,
+            email: email.toLowerCase(),
+            password: hashedPassword,
+            admin: isAdmin === true || isAdmin === 'true',
+        });
+
+        const { password: _pw, ...userData } = newUser.toObject();
+        return res.status(201).json({ success: true, message: 'User created successfully', data: userData });
+    } catch (error) {
+        console.error('createUser error:', error);
+        return res.status(500).json({ success: false, message: 'Failed to create user' });
+    }
+};
+
+
+// PUT /admin/users/:id — update name, email, admin flag, or isActive status for any user
+export const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { fullName, email, isAdmin, isActive } = req.body;
+
+        const updateData = {};
+        if (fullName) updateData.fullName = fullName;
+        if (email)    updateData.email = email.toLowerCase();
+        if (isAdmin !== undefined) updateData.admin = isAdmin === true || isAdmin === 'true';
+        if (isActive !== undefined) updateData.isActive = isActive === true || isActive === 'true';
+
+        const updated = await User.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).select('-password');
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        return res.status(200).json({ success: true, message: 'User updated', data: updated });
+    } catch (error) {
+        console.error('updateUser error:', error);
+        return res.status(500).json({ success: false, message: 'Failed to update user' });
+    }
+};
+
+
+// DELETE /admin/users/:id — delete a user (prevent self-deletion)
+export const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (id === req.user._id.toString()) {
+            return res.status(400).json({ success: false, message: 'You cannot delete your own account' });
+        }
+
+        const deleted = await User.findByIdAndDelete(id);
+        if (!deleted) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        return res.status(200).json({ success: true, message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('deleteUser error:', error);
+        return res.status(500).json({ success: false, message: 'Failed to delete user' });
+    }
+};

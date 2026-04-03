@@ -53,7 +53,7 @@ export function LandingPage() {
             try {
                 const response = await api.get('/feedback/summary');
                 if (response.data.success && response.data.summary.feedbacks.length > 0) {
-                    // Map real feedbacks → testimonial shape, take up to 3
+                    // Map real feedbacks → testimonial shape, take the 3 newest
                     const real = response.data.summary.feedbacks
                         .slice(0, 3)
                         .map(f => {
@@ -180,12 +180,36 @@ export function LandingPage() {
 
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Link to="/register" className="flex-1 sm:flex-none">
-                                    <Button className="w-full sm:w-auto h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg gap-2 rounded-lg shadow-lg hover:shadow-xl transition-all">
+                                    <Button className="w-full sm:w-auto h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg gap-2 rounded-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all">
                                         Start Learning Now
                                         <ArrowRight className="h-5 w-5" />
                                     </Button>
                                 </Link>
-                                <button className="h-12 px-6 rounded-lg border-2 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors">
+                                <button
+                                    style={{
+                                        height: '3rem',
+                                        padding: '0 1.5rem',
+                                        borderRadius: '0.5rem',
+                                        border: '2px solid #2563EB',
+                                        background: 'transparent',
+                                        color: '#2563EB',
+                                        fontWeight: '600',
+                                        fontSize: '1rem',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.22s cubic-bezier(.4,0,.2,1)',
+                                        letterSpacing: '0.01em',
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = '#2563EB';
+                                        e.currentTarget.style.color = '#ffffff';
+                                        e.currentTarget.style.boxShadow = '0 4px 18px 0 rgba(37,99,235,0.35)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.color = '#2563EB';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                >
                                     Learn More
                                 </button>
                             </div>
@@ -214,7 +238,7 @@ export function LandingPage() {
                             <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-950/30 rounded-3xl blur-2xl opacity-50" />
                             <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
                                 {/* Video Placeholder */}
-                                <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center relative overflow-hidden">
+                                <div className="aspect-video bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center relative overflow-hidden">
                                     <div className="absolute inset-0 opacity-20">
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                     </div>
@@ -296,7 +320,7 @@ export function LandingPage() {
                                     className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl transition-all duration-300 flex flex-col"
                                 >
                                     {/* Course Header */}
-                                    <div className="h-40 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-300">
+                                    <div className="h-40 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-300">
                                         <div className="absolute inset-0 opacity-10 bg-gradient-to-t from-black/50 to-transparent" />
                                         <Icon className="h-16 w-16 text-white opacity-80 relative" />
                                     </div>
@@ -397,7 +421,7 @@ export function LandingPage() {
 
                                     {/* Author */}
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0">
                                             <span className="text-white font-bold text-sm">{testimonial.avatar}</span>
                                         </div>
                                         <div>
@@ -415,7 +439,7 @@ export function LandingPage() {
 
             {/* CTA Section */}
             <section className="py-24 px-4 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700" />
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl" />
