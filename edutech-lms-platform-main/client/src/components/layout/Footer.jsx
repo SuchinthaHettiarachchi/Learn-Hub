@@ -23,13 +23,13 @@ export function Footer() {
               Your gateway to quality online learning. Master new skills with our comprehensive courses.
             </p>
             <div className="flex gap-4">
-              <a href="https://github.com" target="https://github.com/sourav-357" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <Github className="h-5 w-5" />
               </a>
-              <a href="https://linkedin.com" target="https://www.linkedin.com/in/sourav-kumar-04a724399/" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
@@ -95,8 +95,8 @@ export function Footer() {
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <a href="mailto:xsouravkumar357@gmail.com" className="hover:text-primary transition-colors">
-                  xsouravkumar357@gmail.com
+                <a href="mailto:support@example.com" className="hover:text-primary transition-colors">
+                  support@example.com
                 </a>
               </div>
               <p className="text-muted-foreground">
@@ -111,7 +111,6 @@ export function Footer() {
             © {currentYear} LMS Platform. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
-            Made by <a href="https://t.me/sourav_1976">Sourav Kumar</a> 
           </p>
         </div>
       </div>

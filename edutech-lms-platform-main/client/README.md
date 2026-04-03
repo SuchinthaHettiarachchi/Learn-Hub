@@ -451,7 +451,7 @@ Runs ESLint to check for code issues.
 
 ## 👤 Author
 
-**Sourav Kumar**
+**Contributors**
 
 ## 🙏 Acknowledgments
 
@@ -465,7 +465,7 @@ Runs ESLint to check for code issues.
 
 ## 📞 Support
 
-For support, email xsouravkumar357@gmail.com or open an issue in the repository.
+For support, please open an issue in the repository.
 
 ---
 
@@ -683,7 +683,7 @@ Runs ESLint to check for code issues.
 
 ## 👤 Author
 
-**Sourav Kumar**
+**Contributors**
 
 ## 🙏 Acknowledgments
 
@@ -697,6 +697,6 @@ Runs ESLint to check for code issues.
 
 ## 📞 Support
 
-For support, email xsouravkumar357@gmail.com or open an issue in the repository.
+For support, please open an issue in the repository.
 
 ---

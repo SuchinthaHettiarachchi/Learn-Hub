@@ -28,12 +28,14 @@ export function AdminDashboardPage() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
   const [creating, setCreating] = useState(false);
   const [editingCourseId, setEditingCourseId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editAmount, setEditAmount] = useState('');
   const [editThumbnail, setEditThumbnail] = useState(null);
+  const [editPdfFile, setEditPdfFile] = useState(null);
   const [editingLoading, setEditingLoading] = useState(false);
   const [userSearchFilter, setUserSearchFilter] = useState('');
 
