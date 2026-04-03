@@ -19,5 +19,5 @@ export const ENV = {
     STRIPE_PUBLISHABLE_KEY:process.env.STRIPE_PUBLISHABLE_KEY,
     STRIPE_SECRET_KEY:process.env.STRIPE_SECRET_KEY,
 
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
 }

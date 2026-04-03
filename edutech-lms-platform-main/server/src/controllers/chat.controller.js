@@ -1,18 +1,8 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import mongoose from "mongoose";
 
 import { ENV } from "../config/env.js";
 import { Course } from "../models/course.model.js";
 import { Enrollment } from "../models/enrollment.model.js";
-
-const extractModelText = (result) => {
-  // Gemini responses can come back in a few different shapes depending on SDK/runtime.
-  return (
-    result?.response?.text?.() ||
-    result?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
-    ""
-  );
-};
 
 export const askChat = async (req, res) => {
   try {
@@ -33,11 +23,11 @@ export const askChat = async (req, res) => {
       });
     }
 
-    if (!ENV.GEMINI_API_KEY) {
+    if (!ENV.GROQ_API_KEY) {
       return res.status(500).json({
         success: false,
         message:
-          "Chatbot is not configured. GEMINI_API_KEY is missing on the server.",
+          "Chatbot is not configured. GROQ_API_KEY is missing on the server.",
       });
     }
 
@@ -59,7 +49,7 @@ export const askChat = async (req, res) => {
       if (!enrollment) {
         return res.status(403).json({
           success: false,
-          message: "You have not purchased this course",
+          message: "You have not enrolled in this course",
         });
       }
 
@@ -85,9 +75,6 @@ export const askChat = async (req, res) => {
       ].join("\n");
     }
 
-    const genAI = new GoogleGenerativeAI(ENV.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
     const prompt = [
       "You are Learn Hub, a course-focused tutor assistant for an LMS.",
       "Answer the user using only the provided course context when available.",
@@ -105,8 +92,25 @@ export const askChat = async (req, res) => {
       "- End with 1 short question that helps you tailor the next answer (e.g., which module/topic).",
     ].join("\n");
 
-    const result = await model.generateContent(prompt);
-    const reply = extractModelText(result).trim();
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${ENV.GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Groq API error: ${response.status} ${errText}`);
+    }
+
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content?.trim();
 
     if (!reply) {
       return res.status(500).json({
