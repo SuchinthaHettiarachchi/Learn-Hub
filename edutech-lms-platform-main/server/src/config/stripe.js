@@ -7,8 +7,10 @@
  */
 
 import { Stripe } from "stripe";
-import { ENV } from './env.js'
+import { ENV } from "./env.js";
 
-
-export const stripe = new Stripe(ENV.STRIPE_SECRET_KEY) ;
+/** Null when STRIPE_SECRET_KEY is unset so the server can boot for local dev. */
+export const stripe = ENV.STRIPE_SECRET_KEY
+  ? new Stripe(ENV.STRIPE_SECRET_KEY)
+  : null;
 

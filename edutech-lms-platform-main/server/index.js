@@ -29,6 +29,7 @@ import paymentRoute from "./src/routes/payment.route.js";
 import analyticRoute from "./src/routes/analytic.route.js";
 import contentRoutes from "./src/routes/contentRoutes.js";
 import enrollmentRoute from "./src/routes/enrollment.route.js";
+import chatRoute from "./src/routes/chat.route.js";
 
 // setting up the server and using middleware
 const app = express();
@@ -59,6 +60,7 @@ app.use("/api/payment", paymentRoute);
 app.use("/api/analytic", analyticRoute);
 app.use("/api/content", contentRoutes);
 app.use("/api/enrollment", enrollmentRoute);
+app.use("/api/chat", chatRoute);
 
 // connect db then starting server
 connectDB()
