@@ -505,7 +505,7 @@ npm test
 
 ## 👤 Author
 
-**Sourav Kumar**
+**Contributors**
 
 ## 🙏 Acknowledgments
 
@@ -520,7 +520,7 @@ npm test
 
 ## 📞 Support
 
-For support, email xsouravkumar357@gmail.com or open an issue in the repository.
+For support, please open an issue in the repository.
 
 ---
 
@@ -821,7 +821,7 @@ npm test
 
 ## 👤 Author
 
-**Sourav Kumar**
+**Contributors**
 
 ## 🙏 Acknowledgments
 
@@ -835,7 +835,7 @@ npm test
 
 ## 📞 Support
 
-For support, email xsouravkumar357@gmail.com or open an issue in the repository.
+For support, please open an issue in the repository.
 
 ---
 

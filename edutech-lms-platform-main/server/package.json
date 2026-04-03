@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The Learning management platform ",
   "license": "ISC",
-  "author": "Sourav Kumar",
+  "author": "",
   "type": "module",
   "main": "index.js",
   "scripts": {

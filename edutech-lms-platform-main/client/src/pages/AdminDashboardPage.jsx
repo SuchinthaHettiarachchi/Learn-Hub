@@ -28,12 +28,14 @@ export function AdminDashboardPage() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
   const [creating, setCreating] = useState(false);
   const [editingCourseId, setEditingCourseId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editAmount, setEditAmount] = useState('');
   const [editThumbnail, setEditThumbnail] = useState(null);
+  const [editPdfFile, setEditPdfFile] = useState(null);
   const [editingLoading, setEditingLoading] = useState(false);
   const [userSearchFilter, setUserSearchFilter] = useState('');
 
@@ -336,7 +338,7 @@ export function AdminDashboardPage() {
       {activeTab === 'dashboard' && (
         <div className="space-y-8">
           {/* Analytics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -370,44 +372,11 @@ export function AdminDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">₹{analytics?.totalRevenue?.toFixed(0) || '0'}</div>
-                <p className="text-xs text-muted-foreground">All time earnings</p>
-              </CardContent>
-            </Card>
+
           </div>
 
-          {/* Charts Row 1 */}
+          {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Daily Revenue (Last 30 Days)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {dailyData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={dailyData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="revenue" fill="#3b82f6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">No data available</p>
-                )}
-              </CardContent>
-            </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -424,34 +393,6 @@ export function AdminDashboardPage() {
                       <YAxis />
                       <Tooltip />
                       <Line type="monotone" dataKey="enrollments" stroke="#10b981" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">No data available</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Charts Row 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingDown className="h-5 w-5" />
-                  Revenue Trend (12 Months)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {revenueTrend.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={revenueTrend}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="_id" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="totalRevenue" stroke="#f59e0b" name="Revenue" />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
@@ -501,8 +442,6 @@ export function AdminDashboardPage() {
                       <tr className="border-b border-slate-200 dark:border-slate-800">
                         <th className="text-left py-2 px-4">Course Title</th>
                         <th className="text-left py-2 px-4">Enrollments</th>
-                        <th className="text-left py-2 px-4">Price</th>
-                        <th className="text-left py-2 px-4">Revenue</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -510,8 +449,6 @@ export function AdminDashboardPage() {
                         <tr key={course._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
                           <td className="py-3 px-4 font-medium">{course.title}</td>
                           <td className="py-3 px-4">{course.enrollmentCount}</td>
-                          <td className="py-3 px-4">₹{course.amount}</td>
-                          <td className="py-3 px-4">₹{course.revenue?.toFixed(0) || '0'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -554,7 +491,6 @@ export function AdminDashboardPage() {
                         <th className="text-left py-3 px-4">Name</th>
                         <th className="text-left py-3 px-4">Email</th>
                         <th className="text-left py-3 px-4">Enrollments</th>
-                        <th className="text-left py-3 px-4">Total Spent</th>
                         <th className="text-left py-3 px-4">Joined</th>
                       </tr>
                     </thead>
@@ -577,7 +513,6 @@ export function AdminDashboardPage() {
                               {user.enrollmentCount}
                             </span>
                           </td>
-                          <td className="py-3 px-4">₹{user.totalSpent?.toFixed(0) || '0'}</td>
                           <td className="py-3 px-4 text-muted-foreground">
                             {new Date(user.createdAt).toLocaleDateString()}
                           </td>
@@ -633,16 +568,7 @@ export function AdminDashboardPage() {
                       rows={4}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Price (INR)</label>
-                    <Input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      required
-                      min="0"
-                    />
-                  </div>
+
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Thumbnail Image</label>
                     <Input
@@ -712,16 +638,7 @@ export function AdminDashboardPage() {
                               rows={3}
                             />
                           </div>
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium">Price (INR)</label>
-                            <Input
-                              type="number"
-                              value={editAmount}
-                              onChange={(e) => setEditAmount(e.target.value)}
-                              required
-                              min="0"
-                            />
-                          </div>
+
                           <div className="space-y-2">
                             <label className="text-sm font-medium">Thumbnail Image (optional)</label>
                             <Input
@@ -746,7 +663,6 @@ export function AdminDashboardPage() {
                               <h3 className="font-semibold text-lg">{course.title}</h3>
                               <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1">{course.description}</p>
                               <div className="flex flex-wrap gap-4 mt-3 text-sm">
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">₹{course.amount}</span>
                                 <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
                                   <BookOpen className="h-4 w-4" />
                                   {course.modules?.length || 0} modules
@@ -839,7 +755,6 @@ export function AdminDashboardPage() {
                       'Name': u.fullName,
                       'Email': u.email,
                       'Enrollments': u.enrollmentCount,
-                      'Total Spent': u.totalSpent,
                       'Joined': new Date(u.createdAt).toLocaleDateString()
                     })),
                     'users-report'
@@ -869,7 +784,6 @@ export function AdminDashboardPage() {
                     courses.map(c => ({
                       'Title': c.title,
                       'Description': c.description,
-                      'Price': c.amount,
                       'Modules': c.modules?.length || 0,
                       'Hidden': c.isHidden ? 'Yes' : 'No'
                     })),
@@ -899,9 +813,7 @@ export function AdminDashboardPage() {
                   onClick={() => exportToCSV(
                     topCourses.map(c => ({
                       'Course': c.title,
-                      'Enrollments': c.enrollmentCount,
-                      'Price': c.amount,
-                      'Revenue': c.revenue?.toFixed(2) || '0'
+                      'Enrollments': c.enrollmentCount
                     })),
                     'top-courses-report'
                   )}
@@ -913,34 +825,7 @@ export function AdminDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Revenue Report
-                </CardTitle>
-                <CardDescription>Export revenue data</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  ₹{analytics?.totalRevenue?.toFixed(0) || '0'} total revenue
-                </p>
-                <Button
-                  onClick={() => exportToCSV(
-                    revenueTrend.map(r => ({
-                      'Month': r._id,
-                      'Revenue': r.totalRevenue?.toFixed(2) || '0',
-                      'Orders': r.totalOrders
-                    })),
-                    'revenue-report'
-                  )}
-                  className="w-full bg-green-600 hover:bg-green-700"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Export to CSV
-                </Button>
-              </CardContent>
-            </Card>
+
           </div>
 
           <Card>
@@ -948,7 +833,7 @@ export function AdminDashboardPage() {
               <CardTitle>Dashboard Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
                   <p className="text-sm text-muted-foreground">Total Users</p>
                   <p className="text-2xl font-bold">{analytics?.users || 0}</p>
@@ -960,10 +845,6 @@ export function AdminDashboardPage() {
                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
                   <p className="text-sm text-muted-foreground">Total Enrollments</p>
                   <p className="text-2xl font-bold">{analytics?.totalEnrollments || 0}</p>
-                </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Total Revenue</p>
-                  <p className="text-2xl font-bold">₹{analytics?.totalRevenue?.toFixed(0) || '0'}</p>
                 </div>
               </div>
             </CardContent>
