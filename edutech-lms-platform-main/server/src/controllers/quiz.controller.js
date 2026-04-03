@@ -216,7 +216,8 @@ export const getQuiz = async (req, res) => {
 // GENERATE CUSTOM QUIZ USING GROQ FROM PDFs
 export const generateCustomQuiz = async (req, res) => {
     try {
-        const { files, quizName, difficulty } = req.body;
+        const { files, quizName, difficulty, questionCount } = req.body;
+        const numQuestions = Math.min(10, Math.max(1, parseInt(questionCount) || 5));
 
         if (!files || !Array.isArray(files) || files.length === 0) {
             return res.status(400).json({ success: false, message: "PDF files are required." });
@@ -261,7 +262,7 @@ export const generateCustomQuiz = async (req, res) => {
         const hintsInstruction = diff === "beginner" ? '"hint": "A helpful clue",' : "";
         const conceptInstruction = '"concept": "Core concept being tested"';
         const userPrompt = `
-Generate 5 multiple-choice quiz questions based on the text provided below.
+Generate ${numQuestions} multiple-choice quiz questions based on the text provided below.
 Difficulty: ${diff.toUpperCase()}. 
 ${diff === "advanced" ? "Push conceptual depth and critical thinking. No hints." : diff === "intermediate" ? "Require deeper understanding. No hints." : "Keep language simple and approachable. Include helpful hints."}
 

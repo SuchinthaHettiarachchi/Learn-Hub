@@ -24,7 +24,17 @@ app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors({
-    origin: ENV.CLIENT_URL,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. curl, mobile apps)
+        if (!origin) return callback(null, true);
+        // In development allow any localhost port
+        if (/^http:\/\/localhost(:\d+)?$/.test(origin)) {
+            return callback(null, true);
+        }
+        // In production allow only CLIENT_URL
+        if (origin === ENV.CLIENT_URL) return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
+    },
     credentials: true
 }));
 

@@ -57,7 +57,7 @@ const DIFFICULTY_CONFIG = {
 
 // ─── API ──────────────────────────────────────────────────────────────────────
 
-async function generateQuizFromPDFs(files, quizName, difficulty) {
+async function generateQuizFromPDFs(files, quizName, difficulty, questionCount) {
   const fileData = await Promise.all(
     files.map(async (f) => {
       const b64 = await readFileAsBase64(f);
@@ -69,6 +69,7 @@ async function generateQuizFromPDFs(files, quizName, difficulty) {
     files: fileData,
     quizName,
     difficulty,
+    questionCount,
   });
 
   return response.data;
@@ -115,6 +116,7 @@ export function MyQuizzesPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [difficulty, setDifficulty] = useState("intermediate");
   const [quizName, setQuizName] = useState("");
+  const [questionCount, setQuestionCount] = useState(5);
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -209,7 +211,7 @@ export function MyQuizzesPage() {
     setPhase("generating"); // Display full screen loading state
     
     try {
-      const data = await generateQuizFromPDFs(files, quizName, difficulty);
+      const data = await generateQuizFromPDFs(files, quizName, difficulty, questionCount);
       if (!data.questions?.length) throw new Error("No questions returned");
       setQuiz(data);
       setCurrentQ(0);
@@ -642,6 +644,40 @@ export function MyQuizzesPage() {
                         </button>
                       );
                     })}
+                  </div>
+
+                  {/* Question Count */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                      Number of Questions <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {[3, 5, 7, 10].map((n) => (
+                        <button
+                          key={n}
+                          onClick={() => setQuestionCount(n)}
+                          className={`w-14 h-11 rounded-xl border-2 font-bold text-sm transition-all duration-150 ${
+                            questionCount === n
+                              ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400"
+                              : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-500"
+                          }`}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                      <div className="flex items-center gap-1 ml-2">
+                        <button
+                          onClick={() => setQuestionCount(q => Math.max(1, q - 1))}
+                          className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-lg flex items-center justify-center"
+                        >−</button>
+                        <span className="w-8 text-center text-sm font-bold text-slate-900 dark:text-white">{questionCount}</span>
+                        <button
+                          onClick={() => setQuestionCount(q => Math.min(10, q + 1))}
+                          className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-lg flex items-center justify-center"
+                        >+</button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">Max 10 questions. More questions = longer generation time.</p>
                   </div>
 
                   {error && (
