@@ -1,8 +1,0 @@
-﻿  origin/Chanuka
-  origin/HEAD -> origin/main
-  origin/Vishwa
-  origin/charindi-dev
-  origin/dev-charindi
-  origin/feature/admin-enrollment
-  origin/feature/content-generation
-  origin/main
