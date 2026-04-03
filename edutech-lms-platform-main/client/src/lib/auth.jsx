@@ -65,7 +65,7 @@ export function AuthProvider({ children }) {
   };
 
   // Check if user is admin
-  const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
+  const isAdmin = user?.admin === true || user?.email === import.meta.env.VITE_ADMIN_EMAIL;
 
 
   // Login function

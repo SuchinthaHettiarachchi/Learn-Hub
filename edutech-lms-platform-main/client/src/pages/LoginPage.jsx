@@ -23,7 +23,7 @@ export function LoginPage() {
     const result = await login(email, password);
 
     if (result.success) {
-      if (result.user?.email === import.meta.env.VITE_ADMIN_EMAIL) {
+      if (result.user?.admin === true || result.user?.email === import.meta.env.VITE_ADMIN_EMAIL) {
         navigate('/admin');
       } else {
         navigate('/dashboard');

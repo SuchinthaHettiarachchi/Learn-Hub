@@ -29,9 +29,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true             // Stored as bcrypt hash (salt rounds: 10)
     },
-    aadmin: {
+    admin: {
         type: Boolean,
-        default: false             // NOTE: Possible typo — controllers set 'user.admin' instead
+        default: false             // True for the admin user
     },
     purchasedCourse: [
         {
