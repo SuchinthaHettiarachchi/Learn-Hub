@@ -338,7 +338,7 @@ export function AdminDashboardPage() {
       {activeTab === 'dashboard' && (
         <div className="space-y-8">
           {/* Analytics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -372,44 +372,11 @@ export function AdminDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">₹{analytics?.totalRevenue?.toFixed(0) || '0'}</div>
-                <p className="text-xs text-muted-foreground">All time earnings</p>
-              </CardContent>
-            </Card>
+
           </div>
 
-          {/* Charts Row 1 */}
+          {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Daily Revenue (Last 30 Days)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {dailyData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={dailyData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="revenue" fill="#3b82f6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">No data available</p>
-                )}
-              </CardContent>
-            </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -426,34 +393,6 @@ export function AdminDashboardPage() {
                       <YAxis />
                       <Tooltip />
                       <Line type="monotone" dataKey="enrollments" stroke="#10b981" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <p className="text-center text-muted-foreground py-8">No data available</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Charts Row 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingDown className="h-5 w-5" />
-                  Revenue Trend (12 Months)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {revenueTrend.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={revenueTrend}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="_id" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="totalRevenue" stroke="#f59e0b" name="Revenue" />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
@@ -503,8 +442,6 @@ export function AdminDashboardPage() {
                       <tr className="border-b border-slate-200 dark:border-slate-800">
                         <th className="text-left py-2 px-4">Course Title</th>
                         <th className="text-left py-2 px-4">Enrollments</th>
-                        <th className="text-left py-2 px-4">Price</th>
-                        <th className="text-left py-2 px-4">Revenue</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -512,8 +449,6 @@ export function AdminDashboardPage() {
                         <tr key={course._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
                           <td className="py-3 px-4 font-medium">{course.title}</td>
                           <td className="py-3 px-4">{course.enrollmentCount}</td>
-                          <td className="py-3 px-4">₹{course.amount}</td>
-                          <td className="py-3 px-4">₹{course.revenue?.toFixed(0) || '0'}</td>
                         </tr>
                       ))}
                     </tbody>
