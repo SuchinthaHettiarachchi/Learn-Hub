@@ -30,6 +30,7 @@ import analyticRoute from "./src/routes/analytic.route.js";
 import contentRoutes from "./src/routes/contentRoutes.js";
 import enrollmentRoute from "./src/routes/enrollment.route.js";
 import chatRoute from "./src/routes/chat.route.js";
+import feedbackRoute from "./src/routes/feedback.route.js";
 
 // setting up the server and using middleware
 const app = express();
@@ -61,6 +62,7 @@ app.use("/api/analytic", analyticRoute);
 app.use("/api/content", contentRoutes);
 app.use("/api/enrollment", enrollmentRoute);
 app.use("/api/chat", chatRoute);
+app.use("/api/feedback", feedbackRoute);
 
 // connect db then starting server
 connectDB()
