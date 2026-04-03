@@ -2,6 +2,7 @@
 
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { ChatWidget } from '../chat/ChatWidget';
 
 
 export function Layout({ children }) {
@@ -17,6 +18,7 @@ export function Layout({ children }) {
       </main>
 
       <Footer />
+      <ChatWidget />
     </div>
   );
 }

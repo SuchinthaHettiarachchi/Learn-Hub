@@ -14,6 +14,13 @@ import { Enrollment } from "../models/enrollment.model.js";
 // creating a checkout session
 export const createCheckOutSession = async (req, res) => {
     try {
+        if (!stripe) {
+            return res.status(503).json({
+                success: false,
+                message: "Payments are not configured (missing STRIPE_SECRET_KEY).",
+            });
+        }
+
         const { products } = req.body;
 
         if (!products || !products._id) {
@@ -99,6 +106,13 @@ export const createCheckOutSession = async (req, res) => {
 // if the checkout is success
 export const checkoutSuccess = async (req, res) => {
     try {
+        if (!stripe) {
+            return res.status(503).json({
+                success: false,
+                message: "Payments are not configured (missing STRIPE_SECRET_KEY).",
+            });
+        }
+
         const sessionId = req.body.sessionId || req.query.session_id;
 
         if (!sessionId) {
