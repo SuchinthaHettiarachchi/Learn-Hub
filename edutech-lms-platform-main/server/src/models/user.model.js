@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false             // True for the admin user
     },
+    isActive: {
+        type: Boolean,
+        default: true              // False = user is blocked from platform
+    },
     purchasedCourse: [
         {
             type: mongoose.Schema.Types.ObjectId,
