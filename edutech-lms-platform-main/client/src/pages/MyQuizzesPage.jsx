@@ -65,14 +65,17 @@ async function generateQuizFromPDFs(files, quizName, difficulty, questionCount) 
     })
   );
 
+  const pdfNames = files.map(f => f.name);
+
   const response = await api.post("/quiz/generateCustom", {
     files: fileData,
     quizName,
     difficulty,
     questionCount,
+    pdfNames,
   });
 
-  return response.data;
+  return { ...response.data, pdfNames };
 }
 
 // ─── Score Ring ───────────────────────────────────────────────────────────────
@@ -156,26 +159,33 @@ export function MyQuizzesPage() {
       id: histQuiz.id,
       topic: histQuiz.topic,
       questions: questions,
+      pdfNames: histQuiz.pdfNames || [],
+      createdAt: histQuiz.createdAt,
     });
     setQuizName(histQuiz.title);
     setDifficulty(histQuiz.difficulty);
     setCurrentQ(0);
     
-    // If it was completed, we can mock the answers to let them see results 
-    // or just let them retake it. 
-    // To show results phase accurately, we'd need the actual answers stored.
-    // For now, if we show "results" without answers, it looks empty.
-    // So we'll let them RETAKE or we can mock them as "correct" for review.
-    
+    // Mock the 'files' state for the results page banner
+    if (histQuiz.pdfNames?.length > 0) {
+      setFiles(histQuiz.pdfNames.map(name => ({ name })));
+    } else {
+      setFiles([]);
+    }
+
     if (histQuiz.isCompleted) {
-      // Mock answers as "correct" so they can review the explanation/breakdown
-      const mockAnswers = questions.map(q => ({
-        questionId: q.id,
-        selected: q.correct,
-        correct: q.correct,
-        isCorrect: true
-      }));
-      setAnswers(mockAnswers);
+      // Use actual saved answers if available
+      if (histQuiz.userAnswers?.length > 0) {
+        setAnswers(histQuiz.userAnswers);
+      } else {
+        // Fallback for old records: Mock as "correct"
+        setAnswers(questions.map(q => ({
+          questionId: q.id,
+          selected: q.correct,
+          correct: q.correct,
+          isCorrect: true
+        })));
+      }
       setPhase("results");
     } else {
       setAnswers([]);
@@ -185,6 +195,7 @@ export function MyQuizzesPage() {
     setSelected(null);
     setConfirmed(false);
     setShowHint(false);
+    setShowHistory(false);
   };
 
   const addFiles = useCallback((incoming) => {
@@ -214,6 +225,8 @@ export function MyQuizzesPage() {
       const data = await generateQuizFromPDFs(files, quizName, difficulty, questionCount);
       if (!data.questions?.length) throw new Error("No questions returned");
       setQuiz(data);
+      // Ensure current files state reflects what was used (for names in results)
+      // If we came from history, files might be mocked names.
       setCurrentQ(0);
       setAnswers([]);
       setSelected(null);
@@ -255,7 +268,12 @@ export function MyQuizzesPage() {
         await api.post("/quiz/updateResult", {
           quizId: quiz.id,
           score: answers.filter((a) => a.isCorrect).length,
-          totalQuestions: quiz.questions.length
+          totalQuestions: quiz.questions.length,
+          userAnswers: answers.map(a => ({
+            questionId: a.questionId,
+            selected: a.selected,
+            isCorrect: a.isCorrect
+          }))
         });
       } catch (err) {
         console.error("Failed to save quiz result", err);
@@ -1008,7 +1026,7 @@ export function MyQuizzesPage() {
           <div className="flex items-center justify-between mb-5 flex-wrap gap-4">
             <div>
               <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
-                Quiz Complete
+                Quiz Complete {quiz.createdAt && `· ${new Date(quiz.createdAt).toLocaleDateString()}`}
               </p>
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
                 {quizName}

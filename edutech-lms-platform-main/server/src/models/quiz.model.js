@@ -29,6 +29,14 @@ const quizSchema = new mongoose.Schema({
     score: { type: Number, default: 0 },
     totalQuestions: { type: Number, default: 0 },
     isCompleted: { type: Boolean, default: false },
+    pdfNames: [String],
+    userAnswers: [
+        {
+            questionId: mongoose.Schema.Types.ObjectId,
+            selected: Number,
+            isCorrect: Boolean
+        }
+    ],
 }, { timestamps: true })
 
 // made the Quiz model and exported it

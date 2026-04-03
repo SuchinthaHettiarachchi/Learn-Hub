@@ -216,7 +216,7 @@ export const getQuiz = async (req, res) => {
 // GENERATE CUSTOM QUIZ USING GROQ FROM PDFs
 export const generateCustomQuiz = async (req, res) => {
     try {
-        const { files, quizName, difficulty, questionCount } = req.body;
+        const { files, quizName, difficulty, questionCount, pdfNames } = req.body;
         const numQuestions = Math.min(10, Math.max(1, parseInt(questionCount) || 5));
 
         if (!files || !Array.isArray(files) || files.length === 0) {
@@ -307,6 +307,7 @@ Return ONLY valid JSON, no markdown fences, no extra text:
             title: quizName,
             topic: parsed.topic || "General",
             difficulty: diff,
+            pdfNames: pdfNames || [],
         });
 
         const createdQuestions = [];
@@ -404,6 +405,8 @@ export const getMyQuizzes = async (req, res) => {
             score: q.score,
             totalQuestions: q.totalQuestions,
             isCompleted: q.isCompleted,
+            pdfNames: q.pdfNames,
+            userAnswers: q.userAnswers,
             createdAt: q.createdAt,
             questions: q.questions.map((question, i) => {
                 const correctIndex = question.options.findIndex(
@@ -431,7 +434,7 @@ export const getMyQuizzes = async (req, res) => {
 // UPDATE QUIZ RESULT (after finishing)
 export const updateQuizResult = async (req, res) => {
     try {
-        const { quizId, score, totalQuestions } = req.body;
+        const { quizId, score, totalQuestions, userAnswers } = req.body;
         if (!mongoose.Types.ObjectId.isValid(quizId)) {
             return res.status(400).json({ success: false, message: "Invalid quiz ID" });
         }
@@ -441,6 +444,7 @@ export const updateQuizResult = async (req, res) => {
             { 
                score, 
                totalQuestions, 
+               userAnswers,
                isCompleted: true 
             },
             { new: true }
