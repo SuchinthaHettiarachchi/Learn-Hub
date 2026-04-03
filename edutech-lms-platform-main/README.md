@@ -1,59 +1,89 @@
-# 1. Get the code
+# Learn Hub — EduTech LMS Platform
+
+A full-stack Learning Management System with AI-powered study tools, course management, and an admin dashboard.
+
+---
+### Step 1 — Clone the Repository
+
+```bash
 git clone https://github.com/SuchinthaHettiarachchi/Learn-Hub.git
-cd Learn-Hub
+cd Learn-Hub/edutech-lms-platform-main
+```
 
-# 2. Setup Backend & MongoDB
+---
+
+### Step 2 — Configure Environment Variables
+
+Inside the `server/` folder, create a `.env` file:
+
+```bash
 cd server
+touch .env
+```
+
+Add the following to `server/.env`:
+
+```env
+PORT=5000
+NODE_ENV=development
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+ADMIN=admin@example.com
+CLIENT_URL=http://localhost:5173
+CLOUD_NAME=your_cloudinary_cloud_name
+CLOUD_API_KEY=your_cloudinary_api_key
+CLOUD_API_SECRET=your_cloudinary_api_secret
+STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+GEMINI_API_KEY=your_gemini_api_key
+GROQ_API_KEY=your_groq_api_key
+```
+
+> **MongoDB**: Create a free cluster at [mongodb.com](https://www.mongodb.com), set Network Access to `0.0.0.0/0`, and paste your connection string as `MONGO_URI`.
+
+---
+
+### Step 3 — Install Server Dependencies
+
+```bash
+# Inside the server/ folder
 npm install
+```
 
-# --- MONGODB PART START ---
-# A. Create a free cluster at mongodb.com
-# B. Set Network Access to "Allow Access From Anywhere" (0.0.0.0/0)
-# C. Copy your Connection String (Driver: Node.js)
-# D. Create the environment file:
-touch .env 
-# E. Open .env and add: MONGODB_URI=your_copied_string_here
-# --- MONGODB PART END ---
+---
 
-# 3. Setup Frontend
+### Step 4 — Install Client Dependencies
+
+```bash
 cd ../client
-npm install recharts  # For admin dashboard charts
 npm install
-
-# 4. Run the Project
-# Terminal 1 (in /server): npm run dev
-# Terminal 2 (in /client): npm run dev
-
----
-
-## 🎛️ Admin Dashboard
-
-The platform now includes a **comprehensive admin dashboard** for platform management.
-
-### Features:
-- 📊 **Real-time Analytics**: Dashboard with charts, metrics, and revenue tracking
-- 👥 **User Management**: View all users, enrollments, and spending data
-- 📚 **Course Management**: Create, edit, delete, and manage courses
-- 📈 **Reports & Export**: Generate and export data as CSV files
-
-### Quick Start:
-1. Login with admin account (email matching `ENV.ADMIN`)
-2. Navigate to your admin dashboard route
-3. View analytics, manage users, courses, and generate reports
-
-### Documentation:
-- **User Guide**: See [ADMIN_DASHBOARD_GUIDE.md](./ADMIN_DASHBOARD_GUIDE.md)
-- **Setup Guide**: See [ADMIN_SETUP.md](./ADMIN_SETUP.md)
-- **Implementation**: See [ADMIN_DASHBOARD_IMPLEMENTATION.md](./ADMIN_DASHBOARD_IMPLEMENTATION.md)
-
-### Key Endpoints:
-```
-GET  /api/analytic/getAnalytic       - Platform metrics
-GET  /api/analytic/getDailyData      - Daily revenue & enrollments
-GET  /api/analytic/topCourses        - Top performing courses
-GET  /api/analytic/revenueTrend      - 12-month revenue trend
-GET  /api/analytic/userGrowth        - 12-month user growth
-GET  /api/admin/users                - All users with stats
 ```
 
 ---
+
+### Step 5 — Run the Project
+
+Open **two separate terminals**:
+
+**Terminal 1 — Backend (port 5000):**
+```bash
+cd server
+npm run dev
+```
+
+**Terminal 2 — Frontend (port 5173):**
+```bash
+cd client
+npm run dev
+```
+
+Open your browser at **http://localhost:5173**
+
+---
+
+## Admin Access
+
+Log in with the email set as `ADMIN` in your `.env` file. The admin dashboard is available at `/admin`.
+
+---
+
