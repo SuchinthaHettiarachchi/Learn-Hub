@@ -491,7 +491,6 @@ export function AdminDashboardPage() {
                         <th className="text-left py-3 px-4">Name</th>
                         <th className="text-left py-3 px-4">Email</th>
                         <th className="text-left py-3 px-4">Enrollments</th>
-                        <th className="text-left py-3 px-4">Total Spent</th>
                         <th className="text-left py-3 px-4">Joined</th>
                       </tr>
                     </thead>
@@ -514,7 +513,6 @@ export function AdminDashboardPage() {
                               {user.enrollmentCount}
                             </span>
                           </td>
-                          <td className="py-3 px-4">₹{user.totalSpent?.toFixed(0) || '0'}</td>
                           <td className="py-3 px-4 text-muted-foreground">
                             {new Date(user.createdAt).toLocaleDateString()}
                           </td>
@@ -570,16 +568,7 @@ export function AdminDashboardPage() {
                       rows={4}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Price (INR)</label>
-                    <Input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      required
-                      min="0"
-                    />
-                  </div>
+
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Thumbnail Image</label>
                     <Input
@@ -649,16 +638,7 @@ export function AdminDashboardPage() {
                               rows={3}
                             />
                           </div>
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium">Price (INR)</label>
-                            <Input
-                              type="number"
-                              value={editAmount}
-                              onChange={(e) => setEditAmount(e.target.value)}
-                              required
-                              min="0"
-                            />
-                          </div>
+
                           <div className="space-y-2">
                             <label className="text-sm font-medium">Thumbnail Image (optional)</label>
                             <Input
@@ -683,7 +663,6 @@ export function AdminDashboardPage() {
                               <h3 className="font-semibold text-lg">{course.title}</h3>
                               <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-1">{course.description}</p>
                               <div className="flex flex-wrap gap-4 mt-3 text-sm">
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">₹{course.amount}</span>
                                 <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
                                   <BookOpen className="h-4 w-4" />
                                   {course.modules?.length || 0} modules
@@ -776,7 +755,6 @@ export function AdminDashboardPage() {
                       'Name': u.fullName,
                       'Email': u.email,
                       'Enrollments': u.enrollmentCount,
-                      'Total Spent': u.totalSpent,
                       'Joined': new Date(u.createdAt).toLocaleDateString()
                     })),
                     'users-report'
@@ -806,7 +784,6 @@ export function AdminDashboardPage() {
                     courses.map(c => ({
                       'Title': c.title,
                       'Description': c.description,
-                      'Price': c.amount,
                       'Modules': c.modules?.length || 0,
                       'Hidden': c.isHidden ? 'Yes' : 'No'
                     })),
@@ -836,9 +813,7 @@ export function AdminDashboardPage() {
                   onClick={() => exportToCSV(
                     topCourses.map(c => ({
                       'Course': c.title,
-                      'Enrollments': c.enrollmentCount,
-                      'Price': c.amount,
-                      'Revenue': c.revenue?.toFixed(2) || '0'
+                      'Enrollments': c.enrollmentCount
                     })),
                     'top-courses-report'
                   )}
@@ -850,34 +825,7 @@ export function AdminDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Revenue Report
-                </CardTitle>
-                <CardDescription>Export revenue data</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  ₹{analytics?.totalRevenue?.toFixed(0) || '0'} total revenue
-                </p>
-                <Button
-                  onClick={() => exportToCSV(
-                    revenueTrend.map(r => ({
-                      'Month': r._id,
-                      'Revenue': r.totalRevenue?.toFixed(2) || '0',
-                      'Orders': r.totalOrders
-                    })),
-                    'revenue-report'
-                  )}
-                  className="w-full bg-green-600 hover:bg-green-700"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Export to CSV
-                </Button>
-              </CardContent>
-            </Card>
+
           </div>
 
           <Card>
@@ -885,7 +833,7 @@ export function AdminDashboardPage() {
               <CardTitle>Dashboard Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
                   <p className="text-sm text-muted-foreground">Total Users</p>
                   <p className="text-2xl font-bold">{analytics?.users || 0}</p>
@@ -897,10 +845,6 @@ export function AdminDashboardPage() {
                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
                   <p className="text-sm text-muted-foreground">Total Enrollments</p>
                   <p className="text-2xl font-bold">{analytics?.totalEnrollments || 0}</p>
-                </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Total Revenue</p>
-                  <p className="text-2xl font-bold">₹{analytics?.totalRevenue?.toFixed(0) || '0'}</p>
                 </div>
               </div>
             </CardContent>
