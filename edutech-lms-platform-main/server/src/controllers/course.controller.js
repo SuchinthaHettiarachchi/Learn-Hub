@@ -68,11 +68,19 @@ export const createCourse = async (req, res) => {
 
         // Upload PDF if provided
         if (pdfFile) {
+            // Validate that the file is actually a PDF
+            if (pdfFile.mimetype !== 'application/pdf') {
+                return res.status(400).json({
+                    success: false,
+                    message: "Only PDF files are allowed for course material",
+                });
+            }
             try {
                 const pdfBase64 = `data:${pdfFile.mimetype};base64,${pdfFile.buffer.toString("base64")}`;
                 const pdfUploadRes = await cloudinary.uploader.upload(pdfBase64, {
                     folder: "lms/pdfs",
-                    resource_type: "raw"
+                    resource_type: "raw",
+                    format: "pdf"
                 });
 
                 if (pdfUploadRes?.secure_url) {
@@ -383,11 +391,19 @@ export const editCourse = async (req, res) => {
         // Handle PDF if provided
         const pdfFile = req.files?.pdfFile?.[0];
         if (pdfFile) {
+            // Validate that the file is actually a PDF
+            if (pdfFile.mimetype !== 'application/pdf') {
+                return res.status(400).json({
+                    success: false,
+                    message: "Only PDF files are allowed for course material",
+                });
+            }
             try {
                 const pdfBase64 = `data:${pdfFile.mimetype};base64,${pdfFile.buffer.toString("base64")}`;
                 const pdfUploadRes = await cloudinary.uploader.upload(pdfBase64, {
                     folder: "lms/pdfs",
-                    resource_type: "raw"
+                    resource_type: "raw",
+                    format: "pdf"
                 });
 
                 if (pdfUploadRes?.secure_url) {
@@ -584,3 +600,70 @@ export const freeEnroll = async (req, res) => {
 };
 
 
+// controller for downloading course PDF via server proxy
+export const downloadCoursePDF = async (req, res) => {
+    try {
+        const { id: courseId } = req.params;
+        const userId = req.user._id;
+
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid course ID",
+            });
+        }
+
+        // Check if user is enrolled or is admin
+        const enrollment = await Enrollment.findOne({ userId, courseId });
+        const user = await User.findById(userId);
+        const isAdmin = user?.admin === true || user?.email === ENV.ADMIN;
+
+        if (!enrollment && !isAdmin) {
+            return res.status(403).json({
+                success: false,
+                message: "You must be enrolled in this course to download the PDF",
+            });
+        }
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({
+                success: false,
+                message: "Course not found",
+            });
+        }
+
+        if (!course.pdfFile) {
+            return res.status(404).json({
+                success: false,
+                message: "No PDF available for this course",
+            });
+        }
+
+        // Fetch the PDF from Cloudinary
+        const pdfResponse = await fetch(course.pdfFile);
+        if (!pdfResponse.ok) {
+            return res.status(502).json({
+                success: false,
+                message: "Failed to fetch PDF from storage",
+            });
+        }
+
+        // Set proper headers for PDF download
+        const sanitizedTitle = course.title.replace(/[^a-zA-Z0-9\s\-_]/g, '').trim();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${sanitizedTitle}.pdf"`);
+
+        // Get the body as array buffer and send
+        const arrayBuffer = await pdfResponse.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        res.send(buffer);
+
+    } catch (error) {
+        console.error("Download PDF error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to download PDF",
+        });
+    }
+};
