@@ -114,7 +114,7 @@ export function CourseLearnPage() {
               {/* PDF Embed */}
               <div className="w-full h-96 md:h-[700px] bg-slate-100 dark:bg-slate-800">
                 <iframe
-                  src={`${course.pdfFile}#toolbar=1&navpanes=0&scrollbar=1`}
+                  src={`/api/viewPDF/${id}#toolbar=1&navpanes=0&scrollbar=1`}
                   width="100%"
                   height="100%"
                   style={{ border: 'none' }}

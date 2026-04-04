@@ -667,3 +667,48 @@ export const downloadCoursePDF = async (req, res) => {
         });
     }
 };
+
+// controller for viewing course PDF inline via server proxy
+export const viewCoursePDF = async (req, res) => {
+    try {
+        const { id: courseId } = req.params;
+        const userId = req.user._id;
+
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).send("Invalid course ID");
+        }
+
+        // Check if user is enrolled or is admin
+        const enrollment = await Enrollment.findOne({ userId, courseId });
+        const user = await User.findById(userId);
+        const isAdmin = user?.admin === true || user?.email === ENV.ADMIN;
+
+        if (!enrollment && !isAdmin) {
+            return res.status(403).send("Unauthorized access to this course material");
+        }
+
+        const course = await Course.findById(courseId);
+        if (!course || !course.pdfFile) {
+            return res.status(404).send("Course material not found");
+        }
+
+        // Fetch the PDF from Cloudinary
+        const pdfResponse = await fetch(course.pdfFile);
+        if (!pdfResponse.ok) {
+            return res.status(502).send("Failed to fetch PDF from storage");
+        }
+
+        // Set proper headers for inline PDF viewing
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline');
+
+        // Get the body as array buffer and send
+        const arrayBuffer = await pdfResponse.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        res.send(buffer);
+
+    } catch (error) {
+        console.error("View PDF error:", error);
+        return res.status(500).send("Failed to load PDF");
+    }
+};
