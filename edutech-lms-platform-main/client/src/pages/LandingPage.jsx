@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../lib/api';
 import { Button } from '../components/ui/button';
 import {
     BookOpen,
@@ -84,26 +86,70 @@ export function LandingPage() {
         },
     ];
 
-    const testimonials = [
+    const [dynamicTestimonials, setDynamicTestimonials] = useState([]);
+    const [loadingTestimonials, setLoadingTestimonials] = useState(true);
+
+    useEffect(() => {
+        const fetchTestimonials = async () => {
+            try {
+                const response = await api.get('/feedback/summary');
+                if (response.data.success && response.data.summary.feedbacks) {
+                    const mapped = response.data.summary.feedbacks
+                        .filter(f => f.featureRequest && f.featureRequest.trim().length > 10) // Only show feedbacks with substantial comments
+                        .map(f => ({
+                            quote: f.featureRequest,
+                            author: f.user?.fullName || 'Anonymous student',
+                            role: (f.academicYear && f.platformSection) 
+                                ? `Student - ${f.academicYear} (${f.platformSection})` 
+                                : f.academicYear || 'Student',
+                            avatar: (f.user?.fullName || 'A')
+                                .split(' ')
+                                .map(n => n[0])
+                                .join('')
+                                .toUpperCase()
+                                .slice(0, 2),
+                            rating: f.contentClarity || 5
+                        }))
+                        .slice(0, 6); // Top 6 feedbacks
+                    setDynamicTestimonials(mapped);
+                }
+            } catch (error) {
+                console.error('Error fetching testimonials:', error);
+            } finally {
+                setLoadingTestimonials(false);
+            }
+        };
+
+        fetchTestimonials();
+    }, []);
+
+    const staticTestimonials = [
         {
             quote: 'This platform completely transformed my career. The content is practical and the instructors are genuinely invested in your success.',
             author: 'Sarah Chen',
             role: 'Full Stack Developer at Google',
             avatar: 'SC',
+            rating: 5
         },
         {
             quote: 'The best online learning experience I\'ve had. Clear explanations, great projects, and amazing community support.',
             author: 'Rajesh Kumar',
             role: 'Mobile Developer at Microsoft',
             avatar: 'RK',
+            rating: 5
         },
         {
             quote: 'Affordable, comprehensive, and beautifully designed. Highly recommend LearnHub to anyone serious about learning.',
             author: 'Emma Wilson',
             role: 'UI/UX Designer at Adobe',
             avatar: 'EW',
+            rating: 5
         },
     ];
+
+    const displayTestimonials = dynamicTestimonials.length > 0 
+        ? [...dynamicTestimonials, ...staticTestimonials].slice(0, 6)
+        : staticTestimonials;
 
     return (
         <div className="min-h-screen bg-white dark:bg-slate-950">
@@ -297,39 +343,57 @@ export function LandingPage() {
                         <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">See what our successful students have to say</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {testimonials.map((testimonial, idx) => (
-                            <div
-                                key={idx}
-                                className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg transition-all duration-300"
-                            >
-                                {/* Rating */}
-                                <div className="flex gap-1 mb-4">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            className="h-5 w-5 fill-yellow-400 text-yellow-400"
-                                        />
-                                    ))}
-                                </div>
-
-                                {/* Quote */}
-                                <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed mb-6">
-                                    "{testimonial.quote}"
-                                </p>
-
-                                {/* Author */}
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                        <span className="text-white font-bold text-sm">{testimonial.avatar}</span>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-slate-900 dark:text-white">{testimonial.author}</p>
-                                        <p className="text-sm text-slate-600 dark:text-slate-400">{testimonial.role}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {loadingTestimonials ? (
+                            // Skeleton loading state
+                            [...Array(3)].map((_, i) => (
+                                <div key={i} className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
+                                    <div className="h-5 w-32 bg-slate-200 dark:bg-slate-800 rounded mb-4"></div>
+                                    <div className="h-4 w-full bg-slate-100 dark:bg-slate-800 rounded mb-2"></div>
+                                    <div className="h-4 w-full bg-slate-100 dark:bg-slate-800 rounded mb-6"></div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+                                        <div className="space-y-2">
+                                            <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                                            <div className="h-3 w-16 bg-slate-100 dark:bg-slate-800 rounded"></div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            displayTestimonials.map((testimonial, idx) => (
+                                <div
+                                    key={idx}
+                                    className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg transition-all duration-300 flex flex-col"
+                                >
+                                    {/* Rating */}
+                                    <div className="flex gap-1 mb-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`h-5 w-5 ${i < (testimonial.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'fill-slate-200 text-slate-200 dark:fill-slate-800 dark:text-slate-800'}`}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Quote */}
+                                    <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed mb-6 flex-1">
+                                        "{testimonial.quote}"
+                                    </p>
+
+                                    {/* Author */}
+                                    <div className="flex items-center gap-4 py-4 border-t border-slate-50 dark:border-slate-800/50 mt-auto">
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                            <span className="text-white font-bold text-sm tracking-tighter">{testimonial.avatar}</span>
+                                        </div>
+                                        <div className="overflow-hidden">
+                                            <p className="font-bold text-slate-900 dark:text-white truncate">{testimonial.author}</p>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400 truncate">{testimonial.role}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>

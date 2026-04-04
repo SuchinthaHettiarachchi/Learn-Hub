@@ -29,7 +29,7 @@ export const submitFeedback = async (req, res) => {
 export const getFeedbackSummary = async (req, res) => {
     try {
         const feedbacks = await Feedback.find()
-            .populate("user", "fullName email")
+            .populate("user", "fullName")
             .sort({ createdAt: -1 });
 
         // Content clarity average (1-5)
