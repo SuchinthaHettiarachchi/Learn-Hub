@@ -389,6 +389,7 @@ export function AdminDashboardPage() {
                 <div className="space-y-2"><label className="text-sm font-medium">Course Title</label><Input value={title} onChange={(e) => setTitle(e.target.value)} required /></div>
                 <div className="space-y-2"><label className="text-sm font-medium">Description</label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows={4} /></div>
                 <div className="space-y-2"><label className="text-sm font-medium">Thumbnail</label><Input type="file" accept="image/*" onChange={(e) => setThumbnail(e.target.files[0])} required /></div>
+                <div className="space-y-2"><label className="text-sm font-medium">Course PDF (optional)</label><Input type="file" accept=".pdf,application/pdf" onChange={(e) => setPdfFile(e.target.files[0])} /></div>
                 <div className="flex gap-2"><Button type="submit" disabled={creating}>{creating ? 'Creating...' : 'Create Course'}</Button><Button type="button" variant="outline" onClick={() => setShowCreateCourse(false)}>Cancel</Button></div>
               </form>
             </CardContent></Card>
@@ -404,6 +405,7 @@ export function AdminDashboardPage() {
                     <div className="space-y-2"><label className="text-sm font-medium">Title</label><Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required /></div>
                     <div className="space-y-2"><label className="text-sm font-medium">Description</label><Textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} required rows={3} /></div>
                     <div className="space-y-2"><label className="text-sm font-medium">Thumbnail (optional)</label><Input type="file" accept="image/*" onChange={(e) => setEditThumbnail(e.target.files[0])} /></div>
+                    <div className="space-y-2"><label className="text-sm font-medium">Course PDF (optional)</label><Input type="file" accept=".pdf,application/pdf" onChange={(e) => setEditPdfFile(e.target.files[0])} /></div>
                     <div className="flex gap-2"><Button type="submit" disabled={editingLoading} className="bg-blue-600 hover:bg-blue-700">{editingLoading ? 'Saving...' : 'Save Changes'}</Button><Button type="button" variant="outline" onClick={() => setEditingCourseId(null)}>Cancel</Button></div>
                   </form>
                 ) : (<>

@@ -2,7 +2,7 @@
 import express from 'express';
 import { adminRoute, protectRoute } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/upload.js';
-import { createCourse, getAllPurchasedCourse, getCourse, getPurchasedCourse, getSingleCourse, editCourse, hideCourse, deleteCourse, getAllCourses } from '../controllers/course.controller.js';
+import { createCourse, getAllPurchasedCourse, getCourse, getPurchasedCourse, getSingleCourse, editCourse, hideCourse, deleteCourse, getAllCourses, downloadCoursePDF } from '../controllers/course.controller.js';
 
 
 const courseRoute = express.Router();
@@ -17,6 +17,7 @@ courseRoute.get('/getAllCoursePurchase', protectRoute, getAllPurchasedCourse);
 courseRoute.put('/editCourse/:id', protectRoute, adminRoute, upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'pdfFile', maxCount: 1 }]), editCourse);
 courseRoute.patch('/hideCourse/:id', protectRoute, adminRoute, hideCourse);
 courseRoute.delete('/deleteCourse/:id', protectRoute, adminRoute, deleteCourse);
+courseRoute.get('/downloadPDF/:id', protectRoute, downloadCoursePDF);
 
 
 export default courseRoute;
